@@ -19,7 +19,7 @@ The Playground uses [ChatGptNet](https://github.com/marcominerva/ChatGptNet) for
 
     builder.Services.AddChatGpt(builder.Configuration);
     
-You can refer to the official documentation available on GitHub for more details about this library and how to configure it.
+You can refer to the [official documentation](https://github.com/marcominerva/ChatGptNet) available on GitHub for more details about this library and how to configure and use it.
 
 In any case, you can safely replace this library with the one you prefer.
 

@@ -38,11 +38,11 @@ When the user sends a message using the Playground, it is received by the Minima
         }
     }
 
-The **AskAsync** method is called when the _Enable Response Streaming_ switch is disabled in the Playground, while **AskStreamAsync** is invoked when the switch is enabled:
+The **AskAsync** method is called when the _Enable Response Streaming_ switch is disabled in the Playground, while **AskStreamAsync** is invoked when it is enabled:
 
 ![](https://raw.githubusercontent.com/marcominerva/ChatGptPlayground/master/assets/ResponseStreaming.png)
 
-The [ChatRequest](https://github.com/marcominerva/ChatGptPlayground/blob/master/src/ChatGptPlayground.Shared/Models/ChatRequest.cs) argument contains the user message. The default implementations call the corresponding methods on [ChatGptNet](https://github.com/marcominerva/ChatGptNet). You can replace them with your own logic. In this way, you can test your custom workflows, without having to worry about implementing the chat service itself.
+The [ChatRequest](https://github.com/marcominerva/ChatGptPlayground/blob/master/src/ChatGptPlayground.Shared/Models/ChatRequest.cs) argument contains the user's message. The default implementations call the corresponding methods on [ChatGptNet](https://github.com/marcominerva/ChatGptNet). You can replace them with your own logic. In this way, you can test your custom workflows, without having to worry about implementing the chat service itself.
 
 ### Contribute
 

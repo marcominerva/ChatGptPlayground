@@ -38,7 +38,7 @@ When the user sends a message using the Playground, it is received by the Minima
         }
     }
 
-The **AskAsync** method is called when the _Enable Response Streaming_ switch is disabled in the Playground, while **AskStreamAsync** is invoked when it is enabled:
+The [AskAsync](https://github.com/marcominerva/ChatGptPlayground/blob/master/src/ChatGptPlayground.BusinessLayer/Services/ChatService.cs#L18-L22) method is called when the _Enable Response Streaming_ switch is disabled in the Playground, while [AskStreamAsync](https://github.com/marcominerva/ChatGptPlayground/blob/master/src/ChatGptPlayground.BusinessLayer/Services/ChatService.cs#L24-L28) is invoked when it is enabled:
 
 ![](https://raw.githubusercontent.com/marcominerva/ChatGptPlayground/master/assets/ResponseStreaming.png)
 

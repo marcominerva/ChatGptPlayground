@@ -42,7 +42,7 @@ The **AskAsync** method is called when the _Enable Response Streaming_ switch is
 
 ![](https://raw.githubusercontent.com/marcominerva/ChatGptPlayground/master/assets/ResponseStreaming.png)
 
-The [ChatRequest](https://github.com/marcominerva/ChatGptPlayground/blob/master/src/ChatGptPlayground.Shared/Models/ChatRequest.cs) argument contains the user message. The default implementations call the corresponding methods on [ChatGptNet](https://github.com/marcominerva/ChatGptNet). You can replace them with your own logic.
+The [ChatRequest](https://github.com/marcominerva/ChatGptPlayground/blob/master/src/ChatGptPlayground.Shared/Models/ChatRequest.cs) argument contains the user message. The default implementations call the corresponding methods on [ChatGptNet](https://github.com/marcominerva/ChatGptNet). You can replace them with your own logic. In this way, you can test your custom workflows, without having to worry about implementing the chat service itself.
 
 ### Contribute
 

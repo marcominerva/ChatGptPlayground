@@ -1,0 +1,27 @@
+{
+    "version": "1.0",
+    "defaultProvider": "cdnjs",
+    "libraries": [
+        {
+            "library": "twitter-bootstrap@5.3.0",
+            "destination": "wwwroot/lib/bootstrap"
+        },
+        {
+            "library": "bootstrap-icons@1.10.5",
+            "destination": "wwwroot/lib/bootstrap-icons"
+        },
+        {
+            "library": "jquery@3.7.0",
+            "destination": "wwwroot/lib/jquery"
+        },
+        {
+            "library": "alpinejs@3.12.2",
+            "destination": "wwwroot/lib/alpinejs"
+        },
+        {
+            "provider": "jsdelivr",
+            "library": "@alpinejs/persist@3.12.2",            
+            "destination": "wwwroot/lib/alpinejs/persist"
+        }
+    ]
+}

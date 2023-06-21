@@ -1,0 +1,42 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.33516.290
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChatGptPlayground", "src\ChatGptPlayground\ChatGptPlayground.csproj", "{2EBD3864-B186-497F-BB38-6D74BBFEEC4E}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChatGptPlayground.BusinessLayer", "src\ChatGptPlayground.BusinessLayer\ChatGptPlayground.BusinessLayer.csproj", "{87CCD4B8-318A-4978-A585-00ADC8C4A719}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{69BEC74E-A82F-48AA-A418-2001765A2361}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChatGptPlayground.Shared", "src\ChatGptPlayground.Shared\ChatGptPlayground.Shared.csproj", "{9B491DB4-5DF5-4961-947D-D4DE8C465A34}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{2EBD3864-B186-497F-BB38-6D74BBFEEC4E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2EBD3864-B186-497F-BB38-6D74BBFEEC4E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2EBD3864-B186-497F-BB38-6D74BBFEEC4E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2EBD3864-B186-497F-BB38-6D74BBFEEC4E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{87CCD4B8-318A-4978-A585-00ADC8C4A719}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{87CCD4B8-318A-4978-A585-00ADC8C4A719}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{87CCD4B8-318A-4978-A585-00ADC8C4A719}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{87CCD4B8-318A-4978-A585-00ADC8C4A719}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9B491DB4-5DF5-4961-947D-D4DE8C465A34}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9B491DB4-5DF5-4961-947D-D4DE8C465A34}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9B491DB4-5DF5-4961-947D-D4DE8C465A34}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9B491DB4-5DF5-4961-947D-D4DE8C465A34}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {0892854D-E76A-4EE8-8CC2-7344D204A35E}
+	EndGlobalSection
+EndGlobal

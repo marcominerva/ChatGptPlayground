@@ -30,7 +30,7 @@
                                 <div>
                                     <template x-if="!message.text">
                                         <div class="card card-text d-inline-block p-3 px-3 m-1">
-                                            <div class="progress-chat" role="progressbar" aria-label="I'm thinking'" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+                                            <div class="progress-chat" role="progressbar" aria-label="I'm thinking" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
                                                 <div class="progress-bar-chat">
                                                     <div class="progress-bar-indeterminate"></div>
                                                 </div>
@@ -40,7 +40,7 @@
 
                                     <template x-if="message.text">
                                         <div class="card card-text d-inline-block p-2 px-3 m-1">
-                                            <span x-html="message.text"></span>
+                                            <div x-html="marked.parse(message.text)"></div>
                                             <div x-cloak class="text-end bg-transparent border-0" x-show="message.isCompleted">
                                                 <button type="button" class="btn-clipboard" aria-label="Copy to clipboard" x-init="$nextTick(() => new bootstrap.Tooltip($el))"
                                                         data-bs-toggle="tooltip" data-bs-html="true"

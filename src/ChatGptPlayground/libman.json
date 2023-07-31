@@ -3,7 +3,7 @@
     "defaultProvider": "cdnjs",
     "libraries": [
         {
-            "library": "twitter-bootstrap@5.3.0",
+            "library": "twitter-bootstrap@5.3.1",
             "destination": "wwwroot/lib/bootstrap"
         },
         {
@@ -24,7 +24,7 @@
             "destination": "wwwroot/lib/alpinejs/persist"
         },
         {
-            "library": "marked@5.1.1",
+            "library": "marked@5.1.2",
             "destination": "wwwroot/lib/marked"
         }
     ]

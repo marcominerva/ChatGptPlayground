@@ -72,6 +72,11 @@
 
     <script>
         $(document).ready(function () {
+            marked.use({
+                mangle: false,
+                headerIds: false
+            });
+
             const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
             const tooltipList = [...tooltipTriggerList].map(element => new bootstrap.Tooltip(element))
         });

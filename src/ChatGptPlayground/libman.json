@@ -24,7 +24,7 @@
             "destination": "wwwroot/lib/alpinejs/persist"
         },
         {
-            "library": "marked@5.1.2",
+            "library": "marked@6.0.0",
             "destination": "wwwroot/lib/marked"
         }
     ]

@@ -58,7 +58,7 @@
                 </div>
             </template>
 
-            <div x-ref="chat" x-init="$watch('messages', value => setTimeout(() => $refs.chat.scrollIntoView(), 1))"></div>
+            <div x-ref="chat" x-init="$watch('messages', value => $nextTick(() => $refs.chat.scrollIntoView()))"></div>
         </div>
 
         <div class="card-footer bg-white w-100 bottom-0 m-0 p-1">

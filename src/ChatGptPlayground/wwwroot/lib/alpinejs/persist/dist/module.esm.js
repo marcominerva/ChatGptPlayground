@@ -23,9 +23,9 @@ function src_default(Alpine) {
       };
     });
   };
-  Object.defineProperty(Alpine, "$persist", {get: () => persist()});
+  Object.defineProperty(Alpine, "$persist", { get: () => persist() });
   Alpine.magic("persist", persist);
-  Alpine.persist = (key, {get, set}, storage = localStorage) => {
+  Alpine.persist = (key, { get, set }, storage = localStorage) => {
     let initial = storageHas(key, storage) ? storageGet(key, storage) : get();
     set(initial);
     Alpine.effect(() => {

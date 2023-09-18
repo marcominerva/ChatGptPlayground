@@ -7,7 +7,7 @@
             "destination": "wwwroot/lib/bootstrap"
         },
         {
-            "library": "bootstrap-icons@1.11.0",
+            "library": "bootstrap-icons@1.11.1",
             "destination": "wwwroot/lib/bootstrap-icons"
         },
         {
@@ -24,7 +24,7 @@
             "destination": "wwwroot/lib/alpinejs/persist"
         },
         {
-            "library": "marked@9.0.0",
+            "library": "marked@9.0.2",
             "destination": "wwwroot/lib/marked"
         }
     ]

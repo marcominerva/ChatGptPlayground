@@ -1,5 +1,4 @@
 ﻿using ChatGptNet;
-using ChatGptNet.Extensions;
 using ChatGptPlayground.BusinessLayer.Services.Interfaces;
 using ChatGptPlayground.Shared.Models;
 using OperationResults;
@@ -10,6 +9,8 @@ public class ChatService : IChatService
 {
     private readonly IChatGptClient chatGptClient;
 
+    private const string ContentFilteredMessage = "The response was filtered by the content filtering system. Please modify your prompt and retry. To learn more about content filtering policies please read the documentation: https://go.microsoft.com/fwlink/?linkid=2198766";
+
     public ChatService(IChatGptClient chatGptClient)
     {
         this.chatGptClient = chatGptClient;
@@ -18,13 +19,20 @@ public class ChatService : IChatService
     public async Task<Result<ChatResponse>> AskAsync(ChatRequest request)
     {
         var response = await chatGptClient.AskAsync(request.ConversationId, request.Message);
-        return new ChatResponse(response.GetMessage());
+
+        var message = !response.IsContentFiltered ? response.GetContent() : ContentFilteredMessage;
+        return new ChatResponse(message);
     }
 
-    public IAsyncEnumerable<string> AskStreamAsync(ChatRequest request)
+    public async IAsyncEnumerable<string> AskStreamAsync(ChatRequest request)
     {
         var responseStream = chatGptClient.AskStreamAsync(request.ConversationId, request.Message);
-        return responseStream.AsDeltas();
+
+        await foreach (var response in responseStream)
+        {
+            var message = !response.IsContentFiltered ? response.GetContent() : ContentFilteredMessage;
+            yield return message;
+        }
     }
 
     public async Task<Result> DeleteAsync(Guid conversationId)

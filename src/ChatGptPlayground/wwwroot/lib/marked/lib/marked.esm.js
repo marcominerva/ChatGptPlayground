@@ -1,5 +1,5 @@
 /**
- * marked v9.0.0 - a markdown parser
+ * marked v9.0.2 - a markdown parser
  * Copyright (c) 2011-2023, Christopher Jeffrey. (MIT Licensed)
  * https://github.com/markedjs/marked
  */
@@ -533,13 +533,17 @@ class _Tokenizer {
     table(src) {
         const cap = this.rules.block.table.exec(src);
         if (cap) {
+            if (!/[:|]/.test(cap[2])) {
+                // delimiter row must have a pipe (|) or colon (:) otherwise it is a setext heading
+                return;
+            }
             const item = {
                 type: 'table',
                 raw: cap[0],
                 header: splitCells(cap[1]).map(c => {
                     return { text: c, tokens: [] };
                 }),
-                align: cap[2].replace(/^ *|\| *$/g, '').split(/ *\| */),
+                align: cap[2].replace(/^\||\| *$/g, '').split('|'),
                 rows: cap[3] && cap[3].trim() ? cap[3].replace(/\n[ \t]*$/, '').split('\n') : []
             };
             if (item.header.length === item.align.length) {
@@ -745,7 +749,7 @@ class _Tokenizer {
             const endReg = match[0][0] === '*' ? this.rules.inline.emStrong.rDelimAst : this.rules.inline.emStrong.rDelimUnd;
             endReg.lastIndex = 0;
             // Clip maskedSrc to same section of string as src (move to lexer?)
-            maskedSrc = maskedSrc.slice(-1 * src.length + lLength);
+            maskedSrc = maskedSrc.slice(-1 * src.length + match[0].length - 1);
             while ((match = endReg.exec(maskedSrc)) != null) {
                 rDelim = match[1] || match[2] || match[3] || match[4] || match[5] || match[6];
                 if (!rDelim)
@@ -934,7 +938,7 @@ const block = {
         + ')',
     def: /^ {0,3}\[(label)\]: *(?:\n *)?([^<\s][^\s]*|<.*?>)(?:(?: +(?:\n *)?| *\n *)(title))? *(?:\n+|$)/,
     table: noopTest,
-    lheading: /^((?:(?!^bull ).|\n(?!\n|bull ))+?)\n {0,3}(=+|-+) *(?:\n+|$)/,
+    lheading: /^(?!bull )((?:.|\n(?!\s*?\n|bull ))+?)\n {0,3}(=+|-+) *(?:\n+|$)/,
     // regex template, placeholders will be replaced according to different paragraph
     // interruption rules of commonmark and the original markdown spec:
     _paragraph: /^([^\n]+(?:\n(?!hr|heading|lheading|blockquote|fences|list|html|table| +\n)[^\n]+)*)/,
@@ -993,8 +997,8 @@ block.normal = { ...block };
  */
 block.gfm = {
     ...block.normal,
-    table: '^ *([^\\n ].*\\|.*)\\n' // Header
-        + ' {0,3}(?:\\| *)?(:?-+:? *(?:\\| *:?-+:? *)*)(?:\\| *)?' // Align
+    table: '^ *([^\\n ].*)\\n' // Header
+        + ' {0,3}((?:\\| *)?:?-+:? *(?:\\| *:?-+:? *)*(?:\\| *)?)' // Align
         + '(?:\\n((?:(?! *\\n|hr|heading|blockquote|code|fences|list|html).*(?:\\n|$))*)\\n*|$)' // Cells
 };
 block.gfm.table = edit(block.gfm.table)

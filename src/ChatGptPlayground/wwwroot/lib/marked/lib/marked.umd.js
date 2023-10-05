@@ -1,5 +1,5 @@
 /**
- * marked v9.0.3 - a markdown parser
+ * marked v9.1.0 - a markdown parser
  * Copyright (c) 2011-2023, Christopher Jeffrey. (MIT Licensed)
  * https://github.com/markedjs/marked
  */

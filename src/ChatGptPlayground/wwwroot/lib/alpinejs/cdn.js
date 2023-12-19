@@ -138,7 +138,7 @@
       directives(el, attrs).forEach((handle) => handle());
     });
     let outNestedComponents = (el) => !closestRoot(el.parentElement, true);
-    Array.from(document.querySelectorAll(allSelectors())).filter(outNestedComponents).forEach((el) => {
+    Array.from(document.querySelectorAll(allSelectors().join(","))).filter(outNestedComponents).forEach((el) => {
       initTree(el);
     });
     dispatch(document, "alpine:initialized");
@@ -413,14 +413,14 @@
         thisProxy
       );
     },
-    set({ objects }, name, value) {
-      return Reflect.set(
-        objects.find(
-          (obj) => Object.prototype.hasOwnProperty.call(obj, name)
-        ) || objects[objects.length - 1],
-        name,
-        value
-      );
+    set({ objects }, name, value, thisProxy) {
+      const target = objects.find(
+        (obj) => Object.prototype.hasOwnProperty.call(obj, name)
+      ) || objects[objects.length - 1];
+      const descriptor = Object.getOwnPropertyDescriptor(target, name);
+      if (descriptor?.set && descriptor?.get)
+        return Reflect.set(target, name, value, thisProxy);
+      return Reflect.set(target, name, value);
     }
   };
   function collapseProxies() {
@@ -765,7 +765,7 @@ ${expression ? 'Expression: "' + expression + '"\n\n' : ""}`, el);
   function toParsedDirectives(transformedAttributeMap, originalAttributeOverride) {
     return ({ name, value }) => {
       let typeMatch = name.match(alpineAttributeRegex());
-      let valueMatch = name.match(/:([a-zA-Z0-9\-:]+)/);
+      let valueMatch = name.match(/:([a-zA-Z0-9\-_:]+)/);
       let modifiers = name.match(/\.[^.\]]+(?=[^\]]*$)/g) || [];
       let original = originalAttributeOverride || transformedAttributeMap[name] || name;
       return {
@@ -783,6 +783,7 @@ ${expression ? 'Expression: "' + expression + '"\n\n' : ""}`, el);
     "ref",
     "data",
     "id",
+    "anchor",
     "bind",
     "init",
     "for",
@@ -1055,7 +1056,7 @@ ${expression ? 'Expression: "' + expression + '"\n\n' : ""}`, el);
     el._x_hidePromise = el._x_transition ? new Promise((resolve, reject) => {
       el._x_transition.out(() => {
       }, () => resolve(hide));
-      el._x_transitioning.beforeCancel(() => reject({ isFromCancelledTransition: true }));
+      el._x_transitioning && el._x_transitioning.beforeCancel(() => reject({ isFromCancelledTransition: true }));
     }) : Promise.resolve(hide);
     queueMicrotask(() => {
       let closest = closestHide(el);
@@ -1209,11 +1210,12 @@ ${expression ? 'Expression: "' + expression + '"\n\n' : ""}`, el);
   function onlyDuringClone(callback) {
     return (...args) => isCloning && callback(...args);
   }
+  var interceptors = [];
+  function interceptClone(callback) {
+    interceptors.push(callback);
+  }
   function cloneNode(from, to) {
-    if (from._x_dataStack) {
-      to._x_dataStack = from._x_dataStack;
-      to.setAttribute("data-has-alpine-state", true);
-    }
+    interceptors.forEach((i) => i(from, to));
     isCloning = true;
     dontRegisterReactiveSideEffects(() => {
       initTree(to, (el, callback) => {
@@ -1258,13 +1260,6 @@ ${expression ? 'Expression: "' + expression + '"\n\n' : ""}`, el);
     callback();
     overrideEffect(cache);
   }
-  function shouldSkipRegisteringDataDuringClone(el) {
-    if (!isCloning)
-      return false;
-    if (isCloningLegacy)
-      return true;
-    return el.hasAttribute("data-has-alpine-state");
-  }
 
   // packages/alpinejs/src/utils/bind.js
   function bind(el, name, value, modifiers = []) {
@@ -1297,7 +1292,11 @@ ${expression ? 'Expression: "' + expression + '"\n\n' : ""}`, el);
         el.value = value;
       }
       if (window.fromModel) {
-        el.checked = checkedAttrLooseCompare(el.value, value);
+        if (typeof value === "boolean") {
+          el.checked = safeParseBoolean(el.value) === value;
+        } else {
+          el.checked = checkedAttrLooseCompare(el.value, value);
+        }
       }
     } else if (el.type === "checkbox") {
       if (Number.isInteger(value)) {
@@ -1365,6 +1364,15 @@ ${expression ? 'Expression: "' + expression + '"\n\n' : ""}`, el);
   }
   function checkedAttrLooseCompare(valueA, valueB) {
     return valueA == valueB;
+  }
+  function safeParseBoolean(rawValue) {
+    if ([1, "1", "true", "on", "yes", true].includes(rawValue)) {
+      return true;
+    }
+    if ([0, "0", "false", "off", "no", false].includes(rawValue)) {
+      return false;
+    }
+    return rawValue ? Boolean(rawValue) : null;
   }
   function isBooleanAttr(attrName) {
     const booleanAttributes = [
@@ -1458,34 +1466,33 @@ ${expression ? 'Expression: "' + expression + '"\n\n' : ""}`, el);
   // packages/alpinejs/src/entangle.js
   function entangle({ get: outerGet, set: outerSet }, { get: innerGet, set: innerSet }) {
     let firstRun = true;
-    let outerHash, innerHash, outerHashLatest, innerHashLatest;
+    let outerHash;
     let reference = effect(() => {
-      let outer, inner;
+      const outer = outerGet();
+      const inner = innerGet();
       if (firstRun) {
-        outer = outerGet();
-        innerSet(JSON.parse(JSON.stringify(outer)));
-        inner = innerGet();
+        innerSet(cloneIfObject(outer));
         firstRun = false;
+        outerHash = JSON.stringify(outer);
       } else {
-        outer = outerGet();
-        inner = innerGet();
-        outerHashLatest = JSON.stringify(outer);
-        innerHashLatest = JSON.stringify(inner);
+        const outerHashLatest = JSON.stringify(outer);
         if (outerHashLatest !== outerHash) {
-          inner = innerGet();
-          innerSet(outer);
-          inner = outer;
+          innerSet(cloneIfObject(outer));
+          outerHash = outerHashLatest;
         } else {
-          outerSet(JSON.parse(innerHashLatest ?? null));
-          outer = inner;
+          outerSet(cloneIfObject(inner));
+          outerHash = JSON.stringify(inner);
         }
       }
-      outerHash = JSON.stringify(outer);
-      innerHash = JSON.stringify(inner);
+      JSON.stringify(innerGet());
+      JSON.stringify(outerGet());
     });
     return () => {
       release(reference);
     };
+  }
+  function cloneIfObject(value) {
+    return typeof value === "object" ? JSON.parse(JSON.stringify(value)) : value;
   }
 
   // packages/alpinejs/src/plugin.js
@@ -1597,7 +1604,7 @@ ${expression ? 'Expression: "' + expression + '"\n\n' : ""}`, el);
     get raw() {
       return raw;
     },
-    version: "3.13.1",
+    version: "3.13.3",
     flushAndStopDeferringMutations,
     dontAutoEvaluateFunctions,
     disableEffectScheduling,
@@ -1611,6 +1618,7 @@ ${expression ? 'Expression: "' + expression + '"\n\n' : ""}`, el);
     onlyDuringClone,
     addRootSelector,
     addInitSelector,
+    interceptClone,
     addScopeToNode,
     deferMutations,
     mapAttributes,
@@ -2559,7 +2567,9 @@ ${expression ? 'Expression: "' + expression + '"\n\n' : ""}`, el);
   directive("ignore", handler);
 
   // packages/alpinejs/src/directives/x-effect.js
-  directive("effect", (el, { expression }, { effect: effect3 }) => effect3(evaluateLater(el, expression)));
+  directive("effect", skipDuringClone((el, { expression }, { effect: effect3 }) => {
+    effect3(evaluateLater(el, expression));
+  }));
 
   // packages/alpinejs/src/utils/on.js
   function on(el, event, modifiers, callback) {
@@ -2801,21 +2811,40 @@ ${expression ? 'Expression: "' + expression + '"\n\n' : ""}`, el);
         return event.detail !== null && event.detail !== void 0 ? event.detail : event.target.value;
       else if (el.type === "checkbox") {
         if (Array.isArray(currentValue)) {
-          let newValue = modifiers.includes("number") ? safeParseNumber(event.target.value) : event.target.value;
+          let newValue = null;
+          if (modifiers.includes("number")) {
+            newValue = safeParseNumber(event.target.value);
+          } else if (modifiers.includes("boolean")) {
+            newValue = safeParseBoolean(event.target.value);
+          } else {
+            newValue = event.target.value;
+          }
           return event.target.checked ? currentValue.concat([newValue]) : currentValue.filter((el2) => !checkedAttrLooseCompare2(el2, newValue));
         } else {
           return event.target.checked;
         }
       } else if (el.tagName.toLowerCase() === "select" && el.multiple) {
-        return modifiers.includes("number") ? Array.from(event.target.selectedOptions).map((option) => {
-          let rawValue = option.value || option.text;
-          return safeParseNumber(rawValue);
-        }) : Array.from(event.target.selectedOptions).map((option) => {
+        if (modifiers.includes("number")) {
+          return Array.from(event.target.selectedOptions).map((option) => {
+            let rawValue = option.value || option.text;
+            return safeParseNumber(rawValue);
+          });
+        } else if (modifiers.includes("boolean")) {
+          return Array.from(event.target.selectedOptions).map((option) => {
+            let rawValue = option.value || option.text;
+            return safeParseBoolean(rawValue);
+          });
+        }
+        return Array.from(event.target.selectedOptions).map((option) => {
           return option.value || option.text;
         });
       } else {
-        let rawValue = event.target.value;
-        return modifiers.includes("number") ? safeParseNumber(rawValue) : modifiers.includes("trim") ? rawValue.trim() : rawValue;
+        if (modifiers.includes("number")) {
+          return safeParseNumber(event.target.value);
+        } else if (modifiers.includes("boolean")) {
+          return safeParseBoolean(event.target.value);
+        }
+        return modifiers.includes("trim") ? event.target.value.trim() : event.target.value;
       }
     });
   }
@@ -2932,6 +2961,19 @@ ${expression ? 'Expression: "' + expression + '"\n\n' : ""}`, el);
       undo();
     });
   });
+  interceptClone((from, to) => {
+    if (from._x_dataStack) {
+      to._x_dataStack = from._x_dataStack;
+      to.setAttribute("data-has-alpine-state", true);
+    }
+  });
+  function shouldSkipRegisteringDataDuringClone(el) {
+    if (!isCloning)
+      return false;
+    if (isCloningLegacy)
+      return true;
+    return el.hasAttribute("data-has-alpine-state");
+  }
 
   // packages/alpinejs/src/directives/x-show.js
   directive("show", (el, { modifiers, expression }, { effect: effect3 }) => {

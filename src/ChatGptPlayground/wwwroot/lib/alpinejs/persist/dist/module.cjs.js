@@ -27,7 +27,18 @@ module.exports = __toCommonJS(module_exports);
 function src_default(Alpine) {
   let persist = () => {
     let alias;
-    let storage = localStorage;
+    let storage;
+    try {
+      storage = localStorage;
+    } catch (e) {
+      console.error(e);
+      console.warn("Alpine: $persist is using temporary storage since localStorage is unavailable.");
+      let dummy = /* @__PURE__ */ new Map();
+      storage = {
+        getItem: dummy.get.bind(dummy),
+        setItem: dummy.set.bind(dummy)
+      };
+    }
     return Alpine.interceptor((initialValue, getter, setter, path, key) => {
       let lookup = alias || `_x_${path}`;
       let initial = storageHas(lookup, storage) ? storageGet(lookup, storage) : initialValue;

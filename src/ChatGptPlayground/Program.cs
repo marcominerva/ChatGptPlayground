@@ -4,12 +4,11 @@ using ChatGptNet;
 using ChatGptPlayground.BusinessLayer.Services;
 using ChatGptPlayground.BusinessLayer.Services.Interfaces;
 using ChatGptPlayground.BusinessLayer.Settings;
+using ChatGptPlayground.ExceptionHandlers;
 using ChatGptPlayground.Extensions;
 using ChatGptPlayground.Swagger;
-using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.OpenApi.Models;
-using MinimalHelpers.OpenApi;
 using MinimalHelpers.Routing;
 using OperationResults.AspNetCore.Http;
 using TinyHelpers.AspNetCore.Extensions;
@@ -29,6 +28,7 @@ builder.Services.AddWebOptimizer(minifyCss: true, minifyJavaScript: builder.Envi
 
 builder.Services.AddChatGpt(builder.Configuration);
 
+builder.Services.AddExceptionHandler<DefaultExceptionHandler>();
 builder.Services.AddProblemDetails(options =>
 {
     options.CustomizeProblemDetails = context =>
@@ -57,7 +57,6 @@ if (swagger.IsEnabled)
         options.SwaggerDoc("v1", new OpenApiInfo { Title = "ChatGptPlayground API", Version = "v1" });
 
         options.AddDefaultResponse();
-        options.AddMissingSchemas();
     });
 }
 
@@ -87,34 +86,7 @@ app.UseWhen(context => context.IsWebRequest(), builder =>
 
 app.UseWhen(context => context.IsApiRequest(), builder =>
 {
-    if (!app.Environment.IsDevelopment())
-    {
-        // Error handling
-        builder.UseExceptionHandler(new ExceptionHandlerOptions
-        {
-            AllowStatusCode404Response = true,
-            ExceptionHandler = async (HttpContext context) =>
-            {
-                var problemDetailsService = context.RequestServices.GetService<IProblemDetailsService>();
-                var exceptionHandlerFeature = context.Features.Get<IExceptionHandlerFeature>();
-                var error = exceptionHandlerFeature?.Error;
-
-                // Write as JSON problem details
-                await problemDetailsService.WriteAsync(new()
-                {
-                    HttpContext = context,
-                    AdditionalMetadata = exceptionHandlerFeature?.Endpoint?.Metadata,
-                    ProblemDetails =
-                    {
-                        Status = context.Response.StatusCode,
-                        Title = error?.GetType().FullName ?? "An error occurred while processing your request",
-                        Detail = error?.Message
-                    }
-                });
-            }
-        });
-    }
-
+    builder.UseExceptionHandler();
     builder.UseStatusCodePages();
 });
 

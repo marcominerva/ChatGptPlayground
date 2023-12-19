@@ -10,6 +10,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{69BEC74E-A82F-48AA-A418-2001765A2361}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
+		Directory.Build.props = Directory.Build.props
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChatGptPlayground.Shared", "src\ChatGptPlayground.Shared\ChatGptPlayground.Shared.csproj", "{9B491DB4-5DF5-4961-947D-D4DE8C465A34}"

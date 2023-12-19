@@ -8,16 +8,9 @@ using TinyHelpers.Extensions;
 
 namespace ChatGptPlayground.Swagger;
 
-public class SwaggerBasicAuthenticationMiddleware
+public class SwaggerBasicAuthenticationMiddleware(RequestDelegate next, IOptions<SwaggerSettings> settingsOptions)
 {
-    private readonly RequestDelegate next;
-    private readonly SwaggerSettings settings;
-
-    public SwaggerBasicAuthenticationMiddleware(RequestDelegate next, IOptions<SwaggerSettings> settingsOptions)
-    {
-        this.next = next;
-        settings = settingsOptions.Value;
-    }
+    private readonly SwaggerSettings settings = settingsOptions.Value;
 
     public async Task InvokeAsync(HttpContext context)
     {

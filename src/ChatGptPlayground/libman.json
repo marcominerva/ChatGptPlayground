@@ -7,7 +7,7 @@
             "destination": "wwwroot/lib/bootstrap"
         },
         {
-            "library": "bootstrap-icons@1.11.1",
+            "library": "bootstrap-icons@1.11.2",
             "destination": "wwwroot/lib/bootstrap-icons"
         },
         {
@@ -15,16 +15,16 @@
             "destination": "wwwroot/lib/jquery"
         },
         {
-            "library": "alpinejs@3.13.1",
+            "library": "alpinejs@3.13.3",
             "destination": "wwwroot/lib/alpinejs"
         },
         {
             "provider": "jsdelivr",
-            "library": "@alpinejs/persist@3.13.1",
+            "library": "@alpinejs/persist@3.13.3",
             "destination": "wwwroot/lib/alpinejs/persist"
         },
         {
-            "library": "marked@9.1.0",
+            "library": "marked@11.1.0",
             "destination": "wwwroot/lib/marked"
         }
     ]

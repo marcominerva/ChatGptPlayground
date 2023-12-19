@@ -5,9 +5,9 @@ using OperationResults.AspNetCore.Http;
 
 namespace ChatGptPlayground.Endpoints;
 
-public class ChatEndpoints : IEndpointRouteHandler
+public class ChatEndpoints : IEndpointRouteHandlerBuilder
 {
-    public void MapEndpoints(IEndpointRouteBuilder endpoints)
+    public static void MapEndpoints(IEndpointRouteBuilder endpoints)
     {
         var chatGroupApi = endpoints.MapGroup("/api/chat");
 
@@ -28,7 +28,7 @@ public class ChatEndpoints : IEndpointRouteHandler
             .WithOpenApi();
     }
 
-    public async Task<IResult> AskAsync(ChatRequest request, IChatService chatService, HttpContext httpContext)
+    public static async Task<IResult> AskAsync(ChatRequest request, IChatService chatService, HttpContext httpContext)
     {
         var result = await chatService.AskAsync(request);
 
@@ -36,7 +36,7 @@ public class ChatEndpoints : IEndpointRouteHandler
         return response;
     }
 
-    public IAsyncEnumerable<string> StreamAsync(ChatRequest request, IChatService chatService, HttpContext httpContext)
+    public static IAsyncEnumerable<string> StreamAsync(ChatRequest request, IChatService chatService, HttpContext httpContext)
     {
         async IAsyncEnumerable<string> Stream()
         {
@@ -53,7 +53,7 @@ public class ChatEndpoints : IEndpointRouteHandler
         return Stream();
     }
 
-    public async Task<IResult> DeleteAsync(Guid conversationId, IChatService chatService, HttpContext httpContext)
+    public static async Task<IResult> DeleteAsync(Guid conversationId, IChatService chatService, HttpContext httpContext)
     {
         var result = await chatService.DeleteAsync(conversationId);
 

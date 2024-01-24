@@ -59,5 +59,6 @@ function storageSet(key, value, storage) {
 // packages/persist/builds/module.js
 var module_default = src_default;
 export {
-  module_default as default
+  module_default as default,
+  src_default as persist
 };

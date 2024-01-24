@@ -19,7 +19,8 @@ var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: tru
 // packages/persist/builds/module.js
 var module_exports = {};
 __export(module_exports, {
-  default: () => module_default
+  default: () => module_default,
+  persist: () => src_default
 });
 module.exports = __toCommonJS(module_exports);
 
@@ -84,4 +85,6 @@ function storageSet(key, value, storage) {
 // packages/persist/builds/module.js
 var module_default = src_default;
 // Annotate the CommonJS export names for ESM import in node:
-0 && (module.exports = {});
+0 && (module.exports = {
+  persist
+});

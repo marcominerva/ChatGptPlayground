@@ -359,6 +359,8 @@
       node._x_ignore = true;
     });
     for (let node of addedNodes) {
+      if (removedNodes.has(node))
+        continue;
       if (!node.isConnected)
         continue;
       delete node._x_ignoreSelf;
@@ -1480,25 +1482,25 @@ ${expression ? 'Expression: "' + expression + '"\n\n' : ""}`, el);
   function entangle({ get: outerGet, set: outerSet }, { get: innerGet, set: innerSet }) {
     let firstRun = true;
     let outerHash;
+    let innerHash;
     let reference = effect(() => {
-      const outer = outerGet();
-      const inner = innerGet();
+      let outer = outerGet();
+      let inner = innerGet();
       if (firstRun) {
         innerSet(cloneIfObject(outer));
         firstRun = false;
-        outerHash = JSON.stringify(outer);
       } else {
-        const outerHashLatest = JSON.stringify(outer);
+        let outerHashLatest = JSON.stringify(outer);
+        let innerHashLatest = JSON.stringify(inner);
         if (outerHashLatest !== outerHash) {
           innerSet(cloneIfObject(outer));
-          outerHash = outerHashLatest;
-        } else {
+        } else if (outerHashLatest !== innerHashLatest) {
           outerSet(cloneIfObject(inner));
-          outerHash = JSON.stringify(inner);
+        } else {
         }
       }
-      JSON.stringify(innerGet());
-      JSON.stringify(outerGet());
+      outerHash = JSON.stringify(outerGet());
+      innerHash = JSON.stringify(innerGet());
     });
     return () => {
       release(reference);
@@ -1617,7 +1619,7 @@ ${expression ? 'Expression: "' + expression + '"\n\n' : ""}`, el);
     get raw() {
       return raw;
     },
-    version: "3.13.4",
+    version: "3.13.5",
     flushAndStopDeferringMutations,
     dontAutoEvaluateFunctions,
     disableEffectScheduling,

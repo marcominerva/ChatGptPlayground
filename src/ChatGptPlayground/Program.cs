@@ -1,16 +1,14 @@
-using System.Diagnostics;
 using System.Text.Json.Serialization;
 using ChatGptNet;
 using ChatGptPlayground.BusinessLayer.Services;
 using ChatGptPlayground.BusinessLayer.Services.Interfaces;
 using ChatGptPlayground.BusinessLayer.Settings;
-using ChatGptPlayground.ExceptionHandlers;
 using ChatGptPlayground.Extensions;
 using ChatGptPlayground.Swagger;
-using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.OpenApi.Models;
 using MinimalHelpers.Routing;
 using OperationResults.AspNetCore.Http;
+using TinyHelpers.AspNetCore.ExceptionHandlers;
 using TinyHelpers.AspNetCore.Extensions;
 using TinyHelpers.AspNetCore.Swagger;
 
@@ -28,18 +26,8 @@ builder.Services.AddWebOptimizer(minifyCss: true, minifyJavaScript: builder.Envi
 
 builder.Services.AddChatGpt(builder.Configuration);
 
-builder.Services.AddExceptionHandler<DefaultExceptionHandler>();
-builder.Services.AddProblemDetails(options =>
-{
-    options.CustomizeProblemDetails = context =>
-    {
-        var statusCode = context.ProblemDetails.Status.GetValueOrDefault(StatusCodes.Status500InternalServerError);
-        context.ProblemDetails.Type ??= $"https://httpstatuses.io/{statusCode}";
-        context.ProblemDetails.Title ??= ReasonPhrases.GetReasonPhrase(statusCode);
-        context.ProblemDetails.Instance ??= context.HttpContext.Request.Path;
-        context.ProblemDetails.Extensions["traceId"] = Activity.Current?.Id ?? context.HttpContext.TraceIdentifier;
-    };
-});
+builder.Services.AddDefaultProblemDetails();
+builder.Services.AddDefaultExceptionHandler();
 
 builder.Services.AddScoped<IChatService, ChatService>();
 

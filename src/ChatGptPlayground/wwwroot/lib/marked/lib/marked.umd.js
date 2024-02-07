@@ -1,6 +1,6 @@
 /**
- * marked v11.1.1 - a markdown parser
- * Copyright (c) 2011-2023, Christopher Jeffrey. (MIT Licensed)
+ * marked v12.0.0 - a markdown parser
+ * Copyright (c) 2011-2024, Christopher Jeffrey. (MIT Licensed)
  * https://github.com/markedjs/marked
  */
 
@@ -939,9 +939,9 @@
         + '|center|col|colgroup|dd|details|dialog|dir|div|dl|dt|fieldset|figcaption'
         + '|figure|footer|form|frame|frameset|h[1-6]|head|header|hr|html|iframe'
         + '|legend|li|link|main|menu|menuitem|meta|nav|noframes|ol|optgroup|option'
-        + '|p|param|section|source|summary|table|tbody|td|tfoot|th|thead|title|tr'
-        + '|track|ul';
-    const _comment = /<!--(?!-?>)[\s\S]*?(?:-->|$)/;
+        + '|p|param|search|section|summary|table|tbody|td|tfoot|th|thead|title'
+        + '|tr|track|ul';
+    const _comment = /<!--(?:-?>|[\s\S]*?(?:-->|$))/;
     const html = edit('^ {0,3}(?:' // optional indentation
         + '<(script|pre|style|textarea)[\\s>][\\s\\S]*?(?:</\\1>[^\\n]*\\n+|$)' // (1)
         + '|comment[^\\n]*(\\n+|$)' // (2)
@@ -1056,7 +1056,7 @@
     const br = /^( {2,}|\\)\n(?!\s*$)/;
     const inlineText = /^(`+|[^`])(?:(?= {2,}\n)|[\s\S]*?(?:(?=[\\<!\[`*_]|\b_|$)|[^ ](?= {2,}\n)))/;
     // list of unicode punctuation marks, plus any missing characters from CommonMark spec
-    const _punctuation = '\\p{P}$+<=>`^|~';
+    const _punctuation = '\\p{P}\\p{S}';
     const punctuation = edit(/^((?![*_])[\spunctuation])/, 'u')
         .replace(/punctuation/g, _punctuation).getRegex();
     // sequences em should skip over [title](link), `code`, <html>
@@ -2095,7 +2095,8 @@
                         const genericToken = token;
                         if (this.defaults.extensions?.childTokens?.[genericToken.type]) {
                             this.defaults.extensions.childTokens[genericToken.type].forEach((childTokens) => {
-                                values = values.concat(this.walkTokens(genericToken[childTokens], callback));
+                                const tokens = genericToken[childTokens].flat(Infinity);
+                                values = values.concat(this.walkTokens(tokens, callback));
                             });
                         }
                         else if (genericToken.tokens) {

@@ -3,7 +3,7 @@
     "defaultProvider": "cdnjs",
     "libraries": [
         {
-            "library": "twitter-bootstrap@5.3.2",
+            "library": "twitter-bootstrap@5.3.3",
             "destination": "wwwroot/lib/bootstrap"
         },
         {
@@ -15,16 +15,16 @@
             "destination": "wwwroot/lib/jquery"
         },
         {
-            "library": "alpinejs@3.13.5",
+            "library": "alpinejs@3.13.6",
             "destination": "wwwroot/lib/alpinejs"
         },
         {
             "provider": "jsdelivr",
-            "library": "@alpinejs/persist@3.13.5",
+            "library": "@alpinejs/persist@3.13.6",
             "destination": "wwwroot/lib/alpinejs/persist"
         },
         {
-            "library": "marked@12.0.0",
+            "library": "marked@12.0.1",
             "destination": "wwwroot/lib/marked"
         }
     ]

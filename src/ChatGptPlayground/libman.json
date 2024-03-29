@@ -15,12 +15,12 @@
             "destination": "wwwroot/lib/jquery"
         },
         {
-            "library": "alpinejs@3.13.6",
+            "library": "alpinejs@3.13.7",
             "destination": "wwwroot/lib/alpinejs"
         },
         {
             "provider": "jsdelivr",
-            "library": "@alpinejs/persist@3.13.6",
+            "library": "@alpinejs/persist@3.13.7",
             "destination": "wwwroot/lib/alpinejs/persist"
         },
         {

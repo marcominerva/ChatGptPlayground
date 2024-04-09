@@ -51,7 +51,10 @@
     return storage.getItem(key) !== null;
   }
   function storageGet(key, storage) {
-    return JSON.parse(storage.getItem(key, storage));
+    let value = storage.getItem(key, storage);
+    if (value === void 0)
+      return;
+    return JSON.parse(value);
   }
   function storageSet(key, value, storage) {
     storage.setItem(key, JSON.stringify(value));

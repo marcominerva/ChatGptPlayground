@@ -6,9 +6,9 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="ChatGptNet" Version="3.2.14" />
-        <PackageReference Include="OperationResultTools" Version="1.0.25" />
-        <PackageReference Include="TinyHelpers" Version="3.1.5" />
+        <PackageReference Include="ChatGptNet" Version="3.2.18" />
+        <PackageReference Include="OperationResultTools" Version="1.0.26" />
+        <PackageReference Include="TinyHelpers" Version="3.1.16" />
     </ItemGroup>
 
     <ItemGroup>

@@ -1,14 +1,14 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net8.0</TargetFramework>
+        <TargetFramework>net9.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="ChatGptNet" Version="3.3.4" />
-        <PackageReference Include="OperationResultTools" Version="1.0.26" />
-        <PackageReference Include="TinyHelpers" Version="3.1.16" />
+        <PackageReference Include="ChatGptNet" Version="3.3.9" />
+        <PackageReference Include="OperationResultTools" Version="1.0.29" />
+        <PackageReference Include="TinyHelpers" Version="3.2.10" />
     </ItemGroup>
 
     <ItemGroup>

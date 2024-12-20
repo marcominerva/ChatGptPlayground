@@ -1,6 +1,5 @@
 ﻿using ChatGptPlayground.BusinessLayer.Services.Interfaces;
 using ChatGptPlayground.Shared.Models;
-using MinimalHelpers.Routing;
 using OperationResults.AspNetCore.Http;
 
 namespace ChatGptPlayground.Endpoints;
@@ -46,7 +45,7 @@ public class ChatEndpoints : IEndpointRouteHandlerBuilder
             await foreach (var delta in responseStream)
             {
                 yield return delta;
-                await Task.Delay(100);
+                await Task.Delay(50);
             }
         }
 

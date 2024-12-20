@@ -15,16 +15,16 @@
             "destination": "wwwroot/lib/jquery"
         },
         {
-            "library": "alpinejs@3.14.1",
+            "library": "alpinejs@3.14.7",
             "destination": "wwwroot/lib/alpinejs"
         },
         {
             "provider": "jsdelivr",
-            "library": "@alpinejs/persist@3.14.1",
+            "library": "@alpinejs/persist@3.14.7",
             "destination": "wwwroot/lib/alpinejs/persist"
         },
         {
-            "library": "marked@14.1.2",
+            "library": "marked@15.0.4",
             "destination": "wwwroot/lib/marked"
         }
     ]

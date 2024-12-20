@@ -67,7 +67,7 @@
                 if (response.status != 200)
                 {
                     const responseText = await response.text();
-                    var content = JSON.parse(responseText.substring(1));
+                    const content = JSON.parse(responseText.substring(1));
 
                     const errorMessage = GetErrorMessage(response.status, content);
                     assistantMessage.text = errorMessage;

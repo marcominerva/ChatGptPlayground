@@ -66,7 +66,9 @@
 
                 if (response.status != 200)
                 {
-                    const content = await response.json();
+                    const responseText = await response.text();
+                    var content = JSON.parse(responseText.substring(1));
+
                     const errorMessage = GetErrorMessage(response.status, content);
                     assistantMessage.text = errorMessage;
                 }
@@ -84,7 +86,7 @@
                         const { done, value } = await reader.read();
                         if (done) break;
 
-                        const arrayString = decoder.decode(value).replace(/\[|]/g, '').replace(/^,/, '');;
+                        const arrayString = decoder.decode(value).replace(/\[|]/g, '').replace(/^,/, '');
                         const deltas = JSON.parse(`[${arrayString}]`);
                         const partialText = deltas.join('');
                         assistantMessage.text = (assistantMessage.text || '') + partialText;

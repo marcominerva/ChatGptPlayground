@@ -45,7 +45,7 @@ public class ChatEndpoints : IEndpointRouteHandlerBuilder
             await foreach (var delta in responseStream)
             {
                 yield return delta;
-                await Task.Delay(100);
+                await Task.Delay(50);
             }
         }
 

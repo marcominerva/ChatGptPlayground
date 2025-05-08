@@ -1655,7 +1655,7 @@ var Alpine = {
   get raw() {
     return raw;
   },
-  version: "3.14.7",
+  version: "3.14.9",
   flushAndStopDeferringMutations,
   dontAutoEvaluateFunctions,
   disableEffectScheduling,

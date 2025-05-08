@@ -1,6 +1,6 @@
 /**
- * marked v15.0.4 - a markdown parser
- * Copyright (c) 2011-2024, Christopher Jeffrey. (MIT Licensed)
+ * marked v15.0.7 - a markdown parser
+ * Copyright (c) 2011-2025, Christopher Jeffrey. (MIT Licensed)
  * https://github.com/markedjs/marked
  */
 
@@ -120,13 +120,24 @@
     const hr = /^ {0,3}((?:-[\t ]*){3,}|(?:_[ \t]*){3,}|(?:\*[ \t]*){3,})(?:\n+|$)/;
     const heading = /^ {0,3}(#{1,6})(?=\s|$)(.*)(?:\n+|$)/;
     const bullet = /(?:[*+-]|\d{1,9}[.)])/;
-    const lheading = edit(/^(?!bull |blockCode|fences|blockquote|heading|html)((?:.|\n(?!\s*?\n|bull |blockCode|fences|blockquote|heading|html))+?)\n {0,3}(=+|-+) *(?:\n+|$)/)
+    const lheadingCore = /^(?!bull |blockCode|fences|blockquote|heading|html|table)((?:.|\n(?!\s*?\n|bull |blockCode|fences|blockquote|heading|html|table))+?)\n {0,3}(=+|-+) *(?:\n+|$)/;
+    const lheading = edit(lheadingCore)
         .replace(/bull/g, bullet) // lists can interrupt
         .replace(/blockCode/g, /(?: {4}| {0,3}\t)/) // indented code blocks can interrupt
         .replace(/fences/g, / {0,3}(?:`{3,}|~{3,})/) // fenced code blocks can interrupt
         .replace(/blockquote/g, / {0,3}>/) // blockquote can interrupt
         .replace(/heading/g, / {0,3}#{1,6}/) // ATX heading can interrupt
         .replace(/html/g, / {0,3}<[^\n>]+>\n/) // block html can interrupt
+        .replace(/\|table/g, '') // table not in commonmark
+        .getRegex();
+    const lheadingGfm = edit(lheadingCore)
+        .replace(/bull/g, bullet) // lists can interrupt
+        .replace(/blockCode/g, /(?: {4}| {0,3}\t)/) // indented code blocks can interrupt
+        .replace(/fences/g, / {0,3}(?:`{3,}|~{3,})/) // fenced code blocks can interrupt
+        .replace(/blockquote/g, / {0,3}>/) // blockquote can interrupt
+        .replace(/heading/g, / {0,3}#{1,6}/) // ATX heading can interrupt
+        .replace(/html/g, / {0,3}<[^\n>]+>\n/) // block html can interrupt
+        .replace(/table/g, / {0,3}\|?(?:[:\- ]*\|)+[\:\- ]*\n/) // table can interrupt
         .getRegex();
     const _paragraph = /^([^\n]+(?:\n(?!hr|heading|lheading|blockquote|fences|list|html|table| +\n)[^\n]+)*)/;
     const blockText = /^[^\n]+/;
@@ -208,6 +219,7 @@
         .getRegex();
     const blockGfm = {
         ...blockNormal,
+        lheading: lheadingGfm,
         table: gfmTable,
         paragraph: edit(_paragraph)
             .replace('hr', hr)
@@ -264,22 +276,36 @@
     const _notPunctuationOrSpace = /[^\s\p{P}\p{S}]/u;
     const punctuation = edit(/^((?![*_])punctSpace)/, 'u')
         .replace(/punctSpace/g, _punctuationOrSpace).getRegex();
+    // GFM allows ~ inside strong and em for strikethrough
+    const _punctuationGfmStrongEm = /(?!~)[\p{P}\p{S}]/u;
+    const _punctuationOrSpaceGfmStrongEm = /(?!~)[\s\p{P}\p{S}]/u;
+    const _notPunctuationOrSpaceGfmStrongEm = /(?:[^\s\p{P}\p{S}]|~)/u;
     // sequences em should skip over [title](link), `code`, <html>
     const blockSkip = /\[[^[\]]*?\]\((?:\\.|[^\\\(\)]|\((?:\\.|[^\\\(\)])*\))*\)|`[^`]*?`|<[^<>]*?>/g;
-    const emStrongLDelim = edit(/^(?:\*+(?:((?!\*)punct)|[^\s*]))|^_+(?:((?!_)punct)|([^\s_]))/, 'u')
+    const emStrongLDelimCore = /^(?:\*+(?:((?!\*)punct)|[^\s*]))|^_+(?:((?!_)punct)|([^\s_]))/;
+    const emStrongLDelim = edit(emStrongLDelimCore, 'u')
         .replace(/punct/g, _punctuation)
         .getRegex();
-    const emStrongRDelimAst = edit('^[^_*]*?__[^_*]*?\\*[^_*]*?(?=__)' // Skip orphan inside strong
+    const emStrongLDelimGfm = edit(emStrongLDelimCore, 'u')
+        .replace(/punct/g, _punctuationGfmStrongEm)
+        .getRegex();
+    const emStrongRDelimAstCore = '^[^_*]*?__[^_*]*?\\*[^_*]*?(?=__)' // Skip orphan inside strong
         + '|[^*]+(?=[^*])' // Consume to delim
         + '|(?!\\*)punct(\\*+)(?=[\\s]|$)' // (1) #*** can only be a Right Delimiter
         + '|notPunctSpace(\\*+)(?!\\*)(?=punctSpace|$)' // (2) a***#, a*** can only be a Right Delimiter
         + '|(?!\\*)punctSpace(\\*+)(?=notPunctSpace)' // (3) #***a, ***a can only be Left Delimiter
         + '|[\\s](\\*+)(?!\\*)(?=punct)' // (4) ***# can only be Left Delimiter
         + '|(?!\\*)punct(\\*+)(?!\\*)(?=punct)' // (5) #***# can be either Left or Right Delimiter
-        + '|notPunctSpace(\\*+)(?=notPunctSpace)', 'gu') // (6) a***a can be either Left or Right Delimiter
+        + '|notPunctSpace(\\*+)(?=notPunctSpace)'; // (6) a***a can be either Left or Right Delimiter
+    const emStrongRDelimAst = edit(emStrongRDelimAstCore, 'gu')
         .replace(/notPunctSpace/g, _notPunctuationOrSpace)
         .replace(/punctSpace/g, _punctuationOrSpace)
         .replace(/punct/g, _punctuation)
+        .getRegex();
+    const emStrongRDelimAstGfm = edit(emStrongRDelimAstCore, 'gu')
+        .replace(/notPunctSpace/g, _notPunctuationOrSpaceGfmStrongEm)
+        .replace(/punctSpace/g, _punctuationOrSpaceGfmStrongEm)
+        .replace(/punct/g, _punctuationGfmStrongEm)
         .getRegex();
     // (6) Not allowed for _
     const emStrongRDelimUnd = edit('^[^_*]*?\\*\\*[^_*]*?_[^_*]*?(?=\\*\\*)' // Skip orphan inside strong
@@ -368,7 +394,8 @@
      */
     const inlineGfm = {
         ...inlineNormal,
-        escape: edit(escape$1).replace('])', '~|])').getRegex(),
+        emStrongRDelimAst: emStrongRDelimAstGfm,
+        emStrongLDelim: emStrongLDelimGfm,
         url: edit(/^((?:ftp|https?):\/\/|www\.)(?:[a-zA-Z0-9\-]+\.?)+[^\s<]*|^email/, 'i')
             .replace('email', /[A-Za-z0-9._+-]+(@)[a-zA-Z0-9-_]+(?:\.[a-zA-Z0-9-_]*[a-zA-Z0-9])+(?![-_])/)
             .getRegex(),
@@ -494,10 +521,7 @@
         // Step left until we fail to match the invert condition.
         while (suffLen < l) {
             const currChar = str.charAt(l - suffLen - 1);
-            if (currChar === c && !invert) {
-                suffLen++;
-            }
-            else if (currChar !== c && invert) {
+            if (currChar === c && true) {
                 suffLen++;
             }
             else {

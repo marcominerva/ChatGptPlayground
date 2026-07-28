@@ -1,0 +1,25 @@
+<script type="module" src="@Assets["Components/Layout/NavMenu.razor.js"]"></script>
+
+<div class="top-row ps-3 navbar navbar-light">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="">Agent Playground</a>
+    </div>
+</div>
+
+<input type="checkbox" title="Navigation menu" class="navbar-toggler" />
+
+<div id="nav-scrollable" class="nav-scrollable">
+    <nav class="nav flex-column">
+        <div class="nav-item">
+            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
+                <i class="bi bi-chat-dots-fill" aria-hidden="true"></i> Chat
+            </NavLink>
+        </div>
+
+        <div class="nav-item">
+            <a class="nav-link" href="https://github.com/microsoft/agent-framework" target="_blank" rel="noopener">
+                <i class="bi bi-github" aria-hidden="true"></i> Agent Framework
+            </a>
+        </div>
+    </nav>
+</div>

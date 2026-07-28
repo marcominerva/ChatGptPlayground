@@ -1,0 +1,103 @@
+.navbar-toggler {
+    appearance: none;
+    cursor: pointer;
+    width: 3.5rem;
+    height: 2.5rem;
+    position: absolute;
+    top: 0.5rem;
+    right: 1rem;
+    border: 1px solid rgba(13,110,253,0.12);
+    background: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='%231b2436' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e") no-repeat center/1.75rem rgba(13,110,253,0.08);
+}
+
+.navbar-toggler:checked {
+    background-color: rgba(13,110,253,0.16);
+}
+
+.top-row {
+    min-height: 3.5rem;
+    background-color: transparent;
+    border-bottom: 1px solid rgba(13,110,253,0.12);
+}
+
+.navbar-brand {
+    font-size: 1.1rem;
+    color: #1b2436;
+}
+
+    .navbar-brand:hover, .navbar-brand:focus {
+        color: #1b2436;
+    }
+
+.nav-item {
+    font-size: 0.9rem;
+    margin: 0.125rem 0.5rem;
+}
+
+    .nav-item:first-of-type {
+        margin-top: 1rem;
+    }
+
+    .nav-item ::deep .nav-link {
+        color: #495867;
+        background: none;
+        border: none;
+        border-radius: 0.5rem;
+        height: 3rem;
+        display: flex;
+        align-items: center;
+        line-height: 3rem;
+        width: 100%;
+        padding: 0 1rem;
+        transition: background-color 0.15s ease-in-out, color 0.15s ease-in-out;
+    }
+
+    .nav-item ::deep .nav-link .bi {
+        width: 1.25rem;
+        margin-right: 0.75rem;
+        font-size: 1.1rem;
+    }
+
+    .nav-item ::deep .nav-link:hover {
+        background-color: rgba(13,110,253,0.08);
+        color: #0d6efd;
+    }
+
+    .nav-item ::deep a.active {
+        background: linear-gradient(90deg, rgba(13,110,253,0.16) 0%, rgba(13,110,253,0.04) 100%);
+        color: #0d6efd;
+        font-weight: 600;
+        box-shadow: inset 3px 0 0 #0d6efd;
+    }
+
+/* The nav item icons inherit the link color, so they are colored individually. */
+.nav-item ::deep .nav-link .bi-chat-dots-fill {
+    color: #198754;
+}
+
+.nav-item ::deep .nav-link .bi-github {
+    color: #1b2436;
+}
+
+.nav-scrollable {
+    display: none;
+}
+
+.navbar-toggler:checked ~ .nav-scrollable {
+    display: block;
+}
+
+@media (min-width: 641px) {
+    .navbar-toggler {
+        display: none;
+    }
+
+    .nav-scrollable {
+        /* Never collapse the sidebar for wide screens */
+        display: block;
+
+        /* Allow sidebar to scroll for tall menus */
+        height: calc(100vh - 3.5rem);
+        overflow-y: auto;
+    }
+}

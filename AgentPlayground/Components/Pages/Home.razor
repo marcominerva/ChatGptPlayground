@@ -8,13 +8,13 @@
 
 <PageTitle>Agent Playground</PageTitle>
 
-<div class="card mx-auto mt-2">
+<div class="card chat-card mx-auto my-4">
     <div class="card-body">
 
         @if (messages.Count == 0)
         {
             <div class="h-100 d-flex flex-column justify-content-center align-items-center text-body-secondary">
-                <Icon Name="IconName.ChatSquareQuoteFill" Color="IconColor.Primary" Size="IconSize.x4" />
+                <i class="bi bi-chat-square-quote-fill text-primary" style="font-size: 4rem;"></i>
                 <p class="mt-3 mb-1 fw-semibold">Chat with your agent</p>
                 <p class="small mb-0">Ask me anything. Press the up arrow key to recall your previous question.</p>
             </div>
@@ -28,12 +28,12 @@
                     <div class="pe-2">
                         <div>
                             <div class="card card-text d-inline-block p-2 px-3 m-1">
-                                <Markdown style="overflow-y:auto;">@message.Text</Markdown>
+                                <Markdown Content="@message.Text" style="overflow-y:auto;" />
                             </div>
                         </div>
                     </div>
                     <div class="position-relative avatar">
-                        <Image src="/images/user.png" class="img-fluid rounded-circle" alt="" />
+                        <img src="/images/user.png" class="img-fluid rounded-circle" alt="" />
                     </div>
                 </div>
             }
@@ -41,7 +41,7 @@
             {
                 <div class="d-flex align-items-baseline">
                     <div class="position-relative avatar">
-                        <Image src="/images/assistant.png" class="img-fluid rounded-circle" alt="" />
+                        <img src="/images/assistant.png" class="img-fluid rounded-circle" alt="" />
                     </div>
                     <div class="pe-2">
                         <div>
@@ -61,12 +61,14 @@
                                     <div class="message-content">
                                         <div class="streaming-content">
                                             <div class="streaming-text @(message.Status == MessageStatus.Streaming ? "streaming-text-with-spinner" : "")">
-                                                <Markdown style="overflow-y:auto;">@message.Text</Markdown>
+                                                <Markdown Content="@message.Text" style="overflow-y:auto;" />
                                             </div>
                                             @if (message.Status == MessageStatus.Streaming)
                                             {
                                                 <div class="streaming-spinner-bottom-left">
-                                                    <Spinner Size="SpinnerSize.Small" Color="SpinnerColor.Primary" />
+                                                    <div class="spinner-border spinner-border-sm text-primary" role="status">
+                                                        <span class="visually-hidden">Loading...</span>
+                                                    </div>
                                                 </div>
                                             }
                                         </div>
@@ -75,23 +77,23 @@
                                     {
                                         <div class="d-flex justify-content-between">
                                             <div class="text-start bg-transparent mt-3">
-                                                <Tooltip Title="@message.TokenUsage" IsHtml="true" Color="TooltipColor.Primary" Placement="TooltipPlacement.Bottom">
-                                                    <Icon Class="d-flex" Name="IconName.CashCoin"></Icon>
-                                                </Tooltip>
+                                                <span class="d-flex" data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="bottom" data-bs-custom-class="tooltip-primary" data-bs-title="@message.TokenUsage">
+                                                    <i class="bi bi-cash-coin"></i>
+                                                </span>
                                             </div>
                                             <div class="text-end bg-transparent copy-button">
-                                                <Tooltip Title="@(copiedMessage == message ? "Copied!" : "Copy to clipboard")" Color="TooltipColor.Dark" Placement="TooltipPlacement.Bottom">
-                                                    <Button Type="ButtonType.Button" Outline="false" @onclick="@(async () => await CopyToClipboardAsync(message))">
+                                                <span data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="@(copiedMessage == message ? "Copied!" : "Copy to clipboard")">
+                                                    <button type="button" class="btn" @onclick="@(async () => await CopyToClipboardAsync(message))">
                                                         @if (copiedMessage == message)
                                                         {
-                                                            <Icon Name="IconName.Check" Class="text-success" />
+                                                            <i class="bi bi-check text-success"></i>
                                                         }
                                                         else
                                                         {
-                                                            <Icon Name="IconName.Clipboard" />
+                                                            <i class="bi bi-clipboard"></i>
                                                         }
-                                                    </Button>
-                                                </Tooltip>
+                                                    </button>
+                                                </span>
                                             </div>
                                         </div>
                                     }
@@ -109,20 +111,20 @@
     <div class="card-footer bg-white w-100 bottom-0 m-0 p-1">
         <div class="input-group">
             <span class="input-group-text bg-transparent border-0">
-                <Tooltip Title="Messages aren't stored in any way, either on the client or on the server." Color="TooltipColor.Primary" Placement="TooltipPlacement.Bottom">
-                    <Icon Class="d-flex" Color="IconColor.Success" Name="IconName.ShieldLockFill"></Icon>
-                </Tooltip>
+                <span class="d-flex" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Messages aren't stored in any way, either on the client or on the server.">
+                    <i class="bi bi-shield-lock-fill text-success"></i>
+                </span>
             </span>
             <input @ref="askInput" type="text" @bind="@question" @bind:event="oninput" placeholder="Ask me anything..." class="form-control border-0" maxlength="2000" @onkeydown="HandleKeyDown" />
             <div class="input-group-text bg-transparent border-0">
-                <Button Type="ButtonType.Submit" Color="ButtonColor.Primary" Disabled="@(isAsking || string.IsNullOrWhiteSpace(question))" @onclick="AskQuestion">
-                    <Icon Name="IconName.Send" />
-                </Button>
-                <Tooltip Title="Start a new conversation" Color="TooltipColor.Secondary" Placement="TooltipPlacement.Bottom">
-                    <Button Type="ButtonType.Reset" Class="ms-2" Color="ButtonColor.Secondary" Disabled="@isAsking" @onclick="Reset">
-                        <Icon CustomIconName="bi bi-x-lg" />
-                    </Button>
-                </Tooltip>
+                <button type="submit" class="btn btn-primary" disabled="@(isAsking || string.IsNullOrWhiteSpace(question))" @onclick="AskQuestion">
+                    <i class="bi bi-send"></i>
+                </button>
+                <span data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Start a new conversation">
+                    <button type="reset" class="btn btn-secondary ms-2" disabled="@isAsking" @onclick="Reset">
+                        <i class="bi bi-x-lg"></i>
+                    </button>
+                </span>
             </div>
         </div>
     </div>
@@ -143,6 +145,9 @@
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
+        // Bootstrap tooltips are opt-in, so they must be (re)initialized whenever the rendered markup changes.
+        await JSRuntime.InvokeVoidAsync("initTooltips");
+
         if (!firstRender)
         {
             return;
@@ -271,7 +276,7 @@
             $"Total tokens: {tokenUsage.TotalTokenCount}"
         ]);
 
-        return $"<p>{details}</p>";
+        return details;
     }
 
     private async Task EnsureMessageIsVisibleAsync()

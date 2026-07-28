@@ -1,0 +1,26 @@
+@using Markdig
+
+<div class="markdown" @attributes="AdditionalAttributes">@((MarkupString)html)</div>
+
+@code {
+    private static readonly MarkdownPipeline pipeline = new MarkdownPipelineBuilder()
+        .UseAdvancedExtensions()
+        .Build();
+
+    private string html = string.Empty;
+
+    /// <summary>
+    /// The Markdown text to render as HTML.
+    /// </summary>
+    [Parameter]
+    public string? Content { get; set; }
+
+    /// <summary>
+    /// Additional attributes that are splatted onto the wrapping <c>div</c> element.
+    /// </summary>
+    [Parameter(CaptureUnmatchedValues = true)]
+    public IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
+
+    protected override void OnParametersSet()
+        => html = Markdig.Markdown.ToHtml(Content ?? string.Empty, pipeline);
+}

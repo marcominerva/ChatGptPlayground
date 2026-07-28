@@ -1,8 +1,4 @@
-﻿.tooltip-inner {
-    text-align: left;
-}
-
-.avatar {
+﻿.avatar {
     width: 50px;
     height: 50px;
     border-radius: 50%;
@@ -21,21 +17,15 @@ input[type="checkbox"] + label {
     cursor: pointer;
 }
 
-.card-body {
+/* The chat fills the viewport minus the layout top row and the card vertical margins. */
+.chat-card {
+    height: calc(100vh - 7.5rem);
+}
+
+.chat-card > .card-body {
     overflow: auto;
-    height: 560px;
-}
-
-@media (min-width: 768px) {
-    .card-body {
-        height: 650px;
-    }
-}
-
-@media (min-width: 2560px) {
-    .card-body {
-        height: 1020px;
-    }
+    flex: 1 1 auto;
+    min-height: 0;
 }
 
 .card-text {

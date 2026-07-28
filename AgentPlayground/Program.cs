@@ -2,14 +2,14 @@
 using System.ClientModel.Primitives;
 using System.Text.Encodings.Web;
 using System.Text.Json;
+using AgentPlayground.Components;
+using AgentPlayground.Services;
+using AgentPlayground.Settings;
 using Microsoft.Agents.AI;
 using Microsoft.Agents.AI.Hosting;
 using Microsoft.Extensions.AI;
 using OpenAI;
 using OpenAI.Responses;
-using AgentPlayground.Components;
-using AgentPlayground.Services;
-using AgentPlayground.Settings;
 using TinyHelpers.AspNetCore.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -21,8 +21,6 @@ var appSettings = builder.Services.ConfigureAndGet<AppSettings>(builder.Configur
 
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
-
-builder.Services.AddBlazorBootstrap();
 
 builder.Services.AddSingleton(TimeProvider.System);
 
@@ -73,7 +71,8 @@ builder.Services.AddAIAgent("PlaygroundAgent", (services, key) =>
             {
                 Effort = ReasoningEffort.Low,
                 Output = ReasoningOutput.None
-            }
+            },
+            Tools = [new HostedWebSearchTool()]
         },
         ChatHistoryProvider = new InMemoryChatHistoryProvider(new()
         {

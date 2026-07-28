@@ -1,51 +1,22 @@
 ﻿@inherits LayoutComponentBase
 
-<Toasts class="p-3" AutoHide="true" Placement="ToastsPlacement.TopRight" />
+<div class="page">
+    <div class="sidebar">
+        <NavMenu />
+    </div>
 
-<BlazorBootstrapLayout StickyHeader="true">
-    <HeaderSection>
-        <a href="https://github.com/microsoft/agent-framework" target="_blank" class="text-decoration-none" title="Microsoft Agent Framework">
-            <Icon Name="IconName.Github" Class="ps-3 ps-lg-2" Size="IconSize.x2" Color="IconColor.Dark"></Icon>
-        </a>
-    </HeaderSection>
+    <main>
+        <div class="top-row px-4">
+            <a href="https://github.com/microsoft/agent-framework" target="_blank" rel="noopener" title="Microsoft Agent Framework">
+                <i class="bi bi-github fs-4"></i>
+            </a>
+        </div>
 
-    <SidebarSection>
-        <Sidebar2 Href="/"
-                  IconName="IconName.ChatDotsFill"
-                  Title="Agent Playground"
-                  DataProvider="Sidebar2DataProvider"
-                  WidthUnit="Unit.Px" />
-    </SidebarSection>
-
-    <ContentSection>
+        <article class="content px-4">
             @Body
-    </ContentSection>
-
-</BlazorBootstrapLayout>
-
-@code {
-    private IEnumerable<NavItem> navItems = default!;
-
-    private Task<Sidebar2DataProviderResult> Sidebar2DataProvider(Sidebar2DataProviderRequest request)
-    {
-        if (navItems is null)
-        {
-            navItems = GetNavItems();
-        }
-
-        var result = request.ApplyTo(navItems);
-        return Task.FromResult(result);
-    }
-
-    private IEnumerable<NavItem> GetNavItems()
-    {
-        navItems = [
-            new() { Id = "1", Href = "/", IconName = IconName.ChatDotsFill, Text = "Chat", Match = NavLinkMatch.All}
-        ];
-
-        return navItems;
-    }
-}
+        </article>
+    </main>
+</div>
 
 <div id="blazor-error-ui" data-nosnippet>
     An unhandled error has occurred.

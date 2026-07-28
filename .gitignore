@@ -383,5 +383,4 @@ FodyWeavers.xsd
 # JetBrains Rider
 *.sln.iml
 
-/SqlDatabaseVectorSearch/appsettings.local.json
 /AgentPlayground/appsettings.local.json

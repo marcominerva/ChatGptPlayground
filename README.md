@@ -96,34 +96,23 @@ Add a screenshot of the chat UI here.
     }
     ```
 
-   Then add the [`Microsoft.Agents.AI.Anthropic`](https://www.nuget.org/packages/Microsoft.Agents.AI.Anthropic) package, create the Anthropic client, and register `PlaygroundAgent` using the Anthropic `AsAIAgent(...)` extension provided by that package:
+   Then add the [`Microsoft.Agents.AI.Anthropic`](https://www.nuget.org/packages/Microsoft.Agents.AI.Anthropic) package, create the Anthropic client, and convert it to `IChatClient` with `AsIChatClient(modelId)`:
 
     ```csharp
     var anthropicSettings = builder.Configuration.GetSection("Anthropic");
 
-    builder.Services.AddAIAgent("PlaygroundAgent", (services, key) =>
+    builder.Services.AddChatClient(_ =>
     {
         var apiKey = anthropicSettings["ApiKey"]!;
         var modelId = anthropicSettings["ModelId"]!;
-        var anthropicClient = new AnthropicClient(apiKey);
 
-        return anthropicClient.AsAIAgent(new ChatClientAgentOptions
-        {
-            Id = key.ToLowerInvariant(),
-            Name = key,
-            ModelId = modelId,
-            ChatOptions = new()
-            {
-                Instructions = """
-                    You are a helpful assistant. Answer the user's questions in the same language as the question.
-                    """
-            }
-        },
-        loggerFactory: services.GetRequiredService<ILoggerFactory>(),
-        services: services);
-    }, ServiceLifetime.Scoped)
-    .WithSessionStore((services, _) => services.GetRequiredService<HybridCacheSessionStoreService>(), withIsolation: false);
+        var anthropicClient = new AnthropicClient { ApiKey = apiKey };
+        return anthropicClient.AsIChatClient(modelId);
+    });
+
     ```
+
+   The `PlaygroundAgent` registration remains the same as shown in the next step: it only needs an `IChatClient` from dependency injection (see below).
 
 3. Configure the agent
 

@@ -36,6 +36,10 @@ public class AgentService([FromKeyedServices("PlaygroundAgent")] AIAgent agent, 
                         yield return new(question.ConversationId, textReasoningContent.Text, StreamState.Reasoning);
                         break;
 
+                    case FunctionCallContent functionCallContent:
+                        yield return new(question.ConversationId, $"{functionCallContent.Name}({string.Join(", ", functionCallContent.Arguments?.Select(a => $"{a.Key} = {a.Value}") ?? [])})", StreamState.FunctionCalling);
+                        break;
+
                     default:
                         if (!string.IsNullOrEmpty(update.Text))
                         {

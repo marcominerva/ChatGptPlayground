@@ -3,6 +3,7 @@
 public enum StreamState
 {
     Reasoning,
+    FunctionCalling,
     Answering,
     Completed
 }

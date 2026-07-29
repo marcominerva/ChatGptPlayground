@@ -1,6 +1,7 @@
 @page "/"
 @rendermode @(new InteractiveServerRenderMode(prerender: false))
 
+@using System.Net
 @using Microsoft.Extensions.AI
 
 @inject IServiceScopeFactory ServiceScopeFactory
@@ -93,10 +94,16 @@
                                     @if (message.Status == MessageStatus.Completed)
                                     {
                                         <div class="assistant-actions d-flex justify-content-between align-items-center mt-3">
-                                            <div class="text-start bg-transparent">
+                                            <div class="text-start bg-transparent d-flex align-items-center gap-3">
                                                 <span class="d-flex align-items-center" data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="bottom" data-bs-custom-class="tooltip-primary" data-bs-title="@message.TokenUsage">
                                                     <i class="bi bi-cash-coin"></i>
                                                 </span>
+                                                @if (message.FunctionCalls.Count > 0)
+                                                {
+                                                    <span class="d-flex align-items-center" data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="bottom" data-bs-custom-class="tooltip-primary" data-bs-title="@message.FunctionCallsTooltip">
+                                                        <i class="bi bi-terminal"></i>
+                                                    </span>
+                                                }
                                             </div>
                                             <div class="text-end bg-transparent copy-button">
                                                 <span data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="@(copiedMessage == message ? "Copied!" : "Copy to clipboard")">
@@ -225,10 +232,16 @@
                     assistantMessage.Status = MessageStatus.Streaming;
                     assistantMessage.Text += update.Text;
                 }
+                else if (update.StreamState == StreamState.FunctionCalling && !string.IsNullOrEmpty(update.Text))
+                {
+                    assistantMessage.Status = MessageStatus.Streaming;
+                    assistantMessage.FunctionCalls.Add(update.Text);
+                }
                 else if (update.StreamState == StreamState.Completed)
                 {
                     assistantMessage.Status = MessageStatus.Completed;
                     assistantMessage.TokenUsage = FormatTokenUsage(update.TokenUsage);
+                    assistantMessage.FunctionCallsTooltip = FormatFunctionCalls(assistantMessage.FunctionCalls);
                 }
 
                 await InvokeAsync(StateHasChanged);
@@ -301,6 +314,11 @@
         return details;
     }
 
+    private static string FormatFunctionCalls(IEnumerable<string> functionCalls)
+    {
+        return string.Join("<br />", ["Function calls:", ..functionCalls.Select(WebUtility.HtmlEncode)]);
+    }
+
     private async Task EnsureMessageIsVisibleAsync()
     {
         await JSRuntime.InvokeVoidAsync("scrollTo", chat);
@@ -315,6 +333,10 @@
 
     public class Message
     {
+        public List<string> FunctionCalls { get; set; } = [];
+
+        public string? FunctionCallsTooltip { get; set; }
+
         public string? ReasoningText { get; set; }
 
         public string? Text { get; set; }

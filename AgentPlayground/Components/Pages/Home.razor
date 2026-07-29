@@ -1,5 +1,4 @@
 @page "/"
-@rendermode @(new InteractiveServerRenderMode(prerender: false))
 
 @using System.Net
 @using Microsoft.Extensions.AI
@@ -172,6 +171,12 @@
         // Bootstrap tooltips are opt-in, so they must be (re)initialized whenever the rendered markup changes.
         await JSRuntime.InvokeVoidAsync("initTooltips");
 
+        // Scrolling here guarantees the browser DOM already contains the latest messages.
+        if (messages.Count > 0)
+        {
+            await EnsureMessageIsVisibleAsync();
+        }
+
         if (!firstRender)
         {
             return;
@@ -210,8 +215,7 @@
 
         question = null;
         await InvokeAsync(StateHasChanged);
-
-        await EnsureMessageIsVisibleAsync();
+        await Task.Yield();
 
         try
         {
@@ -245,7 +249,6 @@
                 }
 
                 await InvokeAsync(StateHasChanged);
-
                 await EnsureMessageIsVisibleAsync();
             }
         }
@@ -258,8 +261,6 @@
         {
             isAsking = false;
             await InvokeAsync(StateHasChanged);
-
-            await EnsureMessageIsVisibleAsync();
         }
     }
 
@@ -316,14 +317,13 @@
 
     private static string FormatFunctionCalls(IEnumerable<string> functionCalls)
     {
-        return string.Join("<br />", ["Function calls:", ..functionCalls.Select(WebUtility.HtmlEncode)]);
+        return string.Join("<br />", ["Function calls:", .. functionCalls.Select(WebUtility.HtmlEncode)]);
     }
 
     private async Task EnsureMessageIsVisibleAsync()
     {
         await JSRuntime.InvokeVoidAsync("scrollTo", chat);
     }
-
     public enum MessageStatus
     {
         New,

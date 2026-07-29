@@ -35,6 +35,10 @@ main {
         text-decoration: underline;
     }
 
+    .top-row ::deep .top-row-icon-link {
+        color: inherit;
+    }
+
     .top-row ::deep a:first-child {
         overflow: hidden;
         text-overflow: ellipsis;

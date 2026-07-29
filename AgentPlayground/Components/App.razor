@@ -12,11 +12,11 @@
 	<link rel="stylesheet" href="@Assets["AgentPlayground.styles.css"]" />
 	<ImportMap />
 	<link rel="icon" type="image/png" href="favicon.png" />
-	<HeadOutlet @rendermode="new InteractiveServerRenderMode(false)" />
+	<HeadOutlet @rendermode="new InteractiveServerRenderMode(prerender: false)" />
 </head>
 
 <body>
-	<Routes @rendermode="new InteractiveServerRenderMode(false)" />
+    <Routes @rendermode="new InteractiveServerRenderMode(prerender: false)" />
 	<ReconnectModal />
 	<script src="@Assets["lib/bootstrap/js/bootstrap.bundle.min.js"]"></script>
 	<script src="@Assets["js/functions.js"]"></script>

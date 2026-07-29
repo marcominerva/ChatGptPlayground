@@ -37,7 +37,9 @@ The default agent is registered in [`Program.cs`](AgentPlayground/Program.cs) wi
 
 ### Web App
 
-Add a screenshot of the chat UI here.
+![Agent Playground chat UI](assets/AgentPlayground_1.png)
+
+![Agent Playground response details](assets/AgentPlayground_2.png)
 
 ## Prerequisites
 - [.NET 10 SDK](https://dotnet.microsoft.com/en-us/download/dotnet/10.0)

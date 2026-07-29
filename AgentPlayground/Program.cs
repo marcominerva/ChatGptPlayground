@@ -22,8 +22,6 @@ var appSettings = builder.Services.ConfigureAndGet<AppSettings>(builder.Configur
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
-builder.Services.AddSingleton(TimeProvider.System);
-
 builder.Services.ConfigureHttpClientDefaults(configure =>
 {
     configure.AddStandardResilienceHandler(options =>

@@ -70,7 +70,7 @@ builder.Services.AddAIAgent("PlaygroundAgent", (services, key) =>
             Reasoning = new()
             {
                 Effort = ReasoningEffort.Low,
-                Output = ReasoningOutput.None
+                Output = ReasoningOutput.Full
             },
             Tools = [new HostedWebSearchTool()]
         },

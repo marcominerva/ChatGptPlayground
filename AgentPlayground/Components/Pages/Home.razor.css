@@ -110,11 +110,17 @@ input[type="checkbox"] + label {
 }
 
 /* The copy button only shows an icon, so the default button chrome is removed and just the pointer cursor is kept. */
+.assistant-actions {
+    line-height: 1;
+}
+
 .copy-button ::deep .btn {
     background-color: transparent;
     border-color: transparent;
     box-shadow: none;
     color: var(--bs-secondary-color);
+    line-height: 1;
+    padding-block: 0;
 }
 
     .copy-button ::deep .btn:hover {

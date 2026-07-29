@@ -1,8 +1,8 @@
 ﻿using System.Runtime.CompilerServices;
+using AgentPlayground.Models;
 using Microsoft.Agents.AI;
 using Microsoft.Agents.AI.Hosting;
 using Microsoft.Extensions.AI;
-using AgentPlayground.Models;
 
 namespace AgentPlayground.Services;
 
@@ -27,9 +27,23 @@ public class AgentService([FromKeyedServices("PlaygroundAgent")] AIAgent agent, 
         await foreach (var update in agent.RunStreamingAsync(question.Text, session, cancellationToken: cancellationToken))
         {
             updates.Add(update);
-            if (!string.IsNullOrEmpty(update.Text))
+
+            foreach (var content in update.Contents)
             {
-                yield return new(question.ConversationId, update.Text, StreamState.Answering);
+                switch (content)
+                {
+                    case TextReasoningContent textReasoningContent when !string.IsNullOrEmpty(textReasoningContent.Text):
+                        yield return new(question.ConversationId, textReasoningContent.Text, StreamState.Reasoning);
+                        break;
+
+                    default:
+                        if (!string.IsNullOrEmpty(update.Text))
+                        {
+                            yield return new(question.ConversationId, update.Text, StreamState.Answering);
+                        }
+
+                        break;
+                }
             }
         }
 

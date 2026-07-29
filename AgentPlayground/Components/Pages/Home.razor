@@ -45,7 +45,7 @@
                     </div>
                     <div class="pe-2">
                         <div>
-                            @if (message.Text is null)
+                            @if (message.Text is null && message.ReasoningText is null)
                             {
                                 <div class="card card-text d-inline-block p-3 px-3 m-1">
                                     <div class="typing-indicator" role="status" aria-label="The assistant is typing">
@@ -58,10 +58,27 @@
                             else
                             {
                                 <div class="card card-text d-inline-block p-2 px-3 m-1">
+                                    @if (!string.IsNullOrWhiteSpace(message.ReasoningText))
+                                    {
+                                        <div class="small fst-italic text-body-secondary mb-2">
+                                            <Markdown Content="@message.ReasoningText" style="overflow-y:auto;" />
+                                        </div>
+                                    }
                                     <div class="message-content">
                                         <div class="streaming-content">
                                             <div class="streaming-text @(message.Status == MessageStatus.Streaming ? "streaming-text-with-spinner" : "")">
-                                                <Markdown Content="@message.Text" style="overflow-y:auto;" />
+                                                @if (message.Text is null && message.ReasoningText is null)
+                                                {
+                                                    <div class="typing-indicator" role="status" aria-label="The assistant is typing">
+                                                        <span class="typing-dot"></span>
+                                                        <span class="typing-dot"></span>
+                                                        <span class="typing-dot"></span>
+                                                    </div>
+                                                }
+                                                else
+                                                {
+                                                    <Markdown Content="@message.Text" style="overflow-y:auto;" />
+                                                }
                                             </div>
                                             @if (message.Status == MessageStatus.Streaming)
                                             {
@@ -75,9 +92,9 @@
                                     </div>
                                     @if (message.Status == MessageStatus.Completed)
                                     {
-                                        <div class="d-flex justify-content-between">
-                                            <div class="text-start bg-transparent mt-3">
-                                                <span class="d-flex" data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="bottom" data-bs-custom-class="tooltip-primary" data-bs-title="@message.TokenUsage">
+                                        <div class="assistant-actions d-flex justify-content-between align-items-center mt-3">
+                                            <div class="text-start bg-transparent">
+                                                <span class="d-flex align-items-center" data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="bottom" data-bs-custom-class="tooltip-primary" data-bs-title="@message.TokenUsage">
                                                     <i class="bi bi-cash-coin"></i>
                                                 </span>
                                             </div>
@@ -197,11 +214,16 @@
             var response = agentService.AskStreamingAsync(userQuestion);
             await foreach (var update in response)
             {
-                if (update.StreamState == StreamState.Answering)
+                if (update.StreamState == StreamState.Reasoning)
+                {
+                    assistantMessage.Status = MessageStatus.Streaming;
+                    assistantMessage.ReasoningText += update.Text;
+                }
+                else if (update.StreamState == StreamState.Answering)
                 {
                     // Adds tokens to the assistant message as they are received.
                     assistantMessage.Status = MessageStatus.Streaming;
-                    assistantMessage.Text += update.Answer;
+                    assistantMessage.Text += update.Text;
                 }
                 else if (update.StreamState == StreamState.Completed)
                 {
@@ -293,6 +315,8 @@
 
     public class Message
     {
+        public string? ReasoningText { get; set; }
+
         public string? Text { get; set; }
 
         public required string Role { get; set; }

@@ -35,8 +35,6 @@ The default agent is registered in [`Program.cs`](AgentPlayground/Program.cs) wi
 
 ## Screenshots
 
-### Web App
-
 ![Agent Playground chat UI](assets/AgentPlayground_1.png)
 
 ![Agent Playground response details](assets/AgentPlayground_2.png)

@@ -56,7 +56,7 @@ builder.Services.AddAIAgent("PlaygroundAgent", (services, key) =>
 {
     var chatClient = services.GetRequiredService<IChatClient>();
 
-    return chatClient.AsAIAgent(new ChatClientAgentOptions
+    return chatClient.AsAIAgent(new()
     {
         Id = key.ToLowerInvariant(),
         Name = key,

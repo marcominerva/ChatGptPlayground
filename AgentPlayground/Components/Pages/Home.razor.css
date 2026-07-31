@@ -44,7 +44,7 @@ input[type="checkbox"] + label {
     width: 8px;
     height: 8px;
     border-radius: 50%;
-    background-color: rgb(5, 114, 206);
+    background-color: var(--bs-link-color);
     animation: typing-bounce 1.2s infinite ease-in-out both;
 }
 

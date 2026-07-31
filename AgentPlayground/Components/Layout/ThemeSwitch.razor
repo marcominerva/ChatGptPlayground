@@ -12,6 +12,7 @@
 
 @code {
     private DotNetObjectReference<ThemeSwitch>? reference;
+    private IJSObjectReference? module;
     private bool isDark;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -21,12 +22,13 @@
             return;
         }
 
+        module = await JSRuntime.InvokeAsync<IJSObjectReference>("import", "./Components/Layout/ThemeSwitch.razor.js");
         reference = DotNetObjectReference.Create(this);
 
-        var theme = await JSRuntime.InvokeAsync<string>("themeManager.getCurrentTheme");
+        var theme = await module.InvokeAsync<string>("getCurrentTheme");
         isDark = theme == "dark";
 
-        await JSRuntime.InvokeVoidAsync("themeManager.watchSystemTheme", reference);
+        await module.InvokeVoidAsync("watchSystemTheme", reference);
 
         StateHasChanged();
     }
@@ -46,12 +48,26 @@
     {
         isDark = args.Value is true;
 
-        await JSRuntime.InvokeVoidAsync("themeManager.setTheme", isDark ? "dark" : "light");
+        if (module is not null)
+        {
+            await module.InvokeVoidAsync("setTheme", isDark ? "dark" : "light");
+        }
     }
 
     public async ValueTask DisposeAsync()
     {
         reference?.Dispose();
-        await ValueTask.CompletedTask;
+
+        if (module is not null)
+        {
+            // The circuit may already be gone when the component is disposed.
+            try
+            {
+                await module.DisposeAsync();
+            }
+            catch (JSDisconnectedException)
+            {
+            }
+        }
     }
 }

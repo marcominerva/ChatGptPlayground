@@ -1,0 +1,11 @@
+.theme-switch .bi {
+    font-size: 1rem;
+    line-height: 1;
+}
+
+.theme-switch .form-check-input {
+    /* The switch is laid out by the flex container, so the default form-check offsets are removed. */
+    float: none;
+    margin: 0 0.5rem;
+    cursor: pointer;
+}

@@ -12,6 +12,19 @@
 	<link rel="stylesheet" href="@Assets["AgentPlayground.styles.css"]" />
 	<ImportMap />
 	<link rel="icon" type="image/svg+xml" href="favicon.svg" />
+	<script>
+		// Applied before the first paint to avoid a flash of the wrong color mode.
+		(() => {
+			const query = window.matchMedia("(prefers-color-scheme: dark)");
+
+			// The theme stored by the user takes precedence over the system settings.
+			const apply = () => document.documentElement.setAttribute("data-bs-theme",
+				localStorage.getItem("theme") ?? (query.matches ? "dark" : "light"));
+
+			apply();
+			query.addEventListener("change", apply);
+		})();
+	</script>
 	<HeadOutlet @rendermode="new InteractiveServerRenderMode(prerender: false)" />
 </head>
 

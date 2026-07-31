@@ -1,0 +1,57 @@
+@implements IAsyncDisposable
+@inject IJSRuntime JSRuntime
+
+<div class="theme-switch form-switch ps-0 d-flex align-items-center">
+    <i class="bi bi-sun-fill" aria-hidden="true"></i>
+
+    <input class="form-check-input" type="checkbox" role="switch" id="theme-switch"
+           checked="@isDark" @onchange="OnSwitchChangedAsync" aria-label="Dark theme" />
+
+    <i class="bi bi-moon-stars-fill" aria-hidden="true"></i>
+</div>
+
+@code {
+    private DotNetObjectReference<ThemeSwitch>? reference;
+    private bool isDark;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender)
+        {
+            return;
+        }
+
+        reference = DotNetObjectReference.Create(this);
+
+        var theme = await JSRuntime.InvokeAsync<string>("themeManager.getCurrentTheme");
+        isDark = theme == "dark";
+
+        await JSRuntime.InvokeVoidAsync("themeManager.watchSystemTheme", reference);
+
+        StateHasChanged();
+    }
+
+    /// <summary>
+    /// Invoked from JavaScript when the operating system switches color scheme and no theme has been forced.
+    /// </summary>
+    /// <param name="theme">The theme applied by the system, either <c>light</c> or <c>dark</c>.</param>
+    [JSInvokable]
+    public void OnSystemThemeChanged(string theme)
+    {
+        isDark = theme == "dark";
+        StateHasChanged();
+    }
+
+    private async Task OnSwitchChangedAsync(ChangeEventArgs args)
+    {
+        isDark = args.Value is true;
+
+        await JSRuntime.InvokeVoidAsync("themeManager.setTheme", isDark ? "dark" : "light");
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        reference?.Dispose();
+        await ValueTask.CompletedTask;
+    }
+}

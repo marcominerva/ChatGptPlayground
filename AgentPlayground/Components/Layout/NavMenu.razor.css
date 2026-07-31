@@ -6,8 +6,8 @@
     position: absolute;
     top: 0.5rem;
     right: 1rem;
-    border: 1px solid rgba(13,110,253,0.12);
-    background: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='%231b2436' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e") no-repeat center/1.75rem rgba(13,110,253,0.08);
+    border: 1px solid var(--bs-border-color);
+    background: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='%230d6efd' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e") no-repeat center/1.75rem rgba(13,110,253,0.08);
 }
 
 .navbar-toggler:checked {
@@ -17,16 +17,16 @@
 .top-row {
     min-height: 3.5rem;
     background-color: transparent;
-    border-bottom: 1px solid rgba(13,110,253,0.12);
+    border-bottom: 1px solid var(--bs-border-color);
 }
 
 .navbar-brand {
     font-size: 1.1rem;
-    color: #1b2436;
+    color: var(--bs-emphasis-color);
 }
 
     .navbar-brand:hover, .navbar-brand:focus {
-        color: #1b2436;
+        color: var(--bs-emphasis-color);
     }
 
 .nav-item {
@@ -39,7 +39,7 @@
     }
 
     .nav-item ::deep .nav-link {
-        color: #495867;
+        color: var(--bs-body-color);
         background: none;
         border: none;
         border-radius: 0.5rem;
@@ -60,14 +60,14 @@
 
     .nav-item ::deep .nav-link:hover {
         background-color: rgba(13,110,253,0.08);
-        color: #0d6efd;
+        color: var(--bs-link-color);
     }
 
     .nav-item ::deep a.active {
         background: linear-gradient(90deg, rgba(13,110,253,0.16) 0%, rgba(13,110,253,0.04) 100%);
-        color: #0d6efd;
+        color: var(--bs-link-color);
         font-weight: 600;
-        box-shadow: inset 3px 0 0 #0d6efd;
+        box-shadow: inset 3px 0 0 var(--bs-link-color);
     }
 
 /* The nav item icons inherit the link color, so they are colored individually. */
@@ -76,7 +76,7 @@
 }
 
 .nav-item ::deep .nav-link .bi-github {
-    color: #1b2436;
+    color: var(--bs-emphasis-color);
 }
 
 .nav-scrollable {

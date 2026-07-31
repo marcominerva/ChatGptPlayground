@@ -3,8 +3,20 @@
     height: 50px;
     border-radius: 50%;
     border: 2px solid var(--bs-border-color);
-    padding: 2px;
     flex: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--bs-tertiary-bg);
+    font-size: 1.5rem;
+}
+
+.avatar-user {
+    color: var(--bs-secondary-color);
+}
+
+.avatar-assistant {
+    color: var(--bs-link-color);
 }
 
 input:focus {

@@ -49,7 +49,6 @@ builder.Services.AddHybridCache(options =>
         LocalCacheExpiration = appSettings.MessageExpiration
     };
 });
-
 builder.Services.AddSingleton<HybridCacheSessionStoreService>();
 
 builder.Services.AddAIAgent("PlaygroundAgent", (services, key) =>

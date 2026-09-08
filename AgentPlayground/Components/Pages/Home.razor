@@ -45,7 +45,7 @@
                     </div>
                     <div class="pe-2">
                         <div>
-                            @if (message.Text is null && message.ReasoningText is null)
+                            @if (message.IsEmpty)
                             {
                                 <div class="card card-text d-inline-block p-3 px-3 m-1">
                                     <div class="typing-indicator" role="status" aria-label="The assistant is typing">
@@ -67,18 +67,7 @@
                                     <div class="message-content">
                                         <div class="streaming-content">
                                             <div class="streaming-text @(message.Status == MessageStatus.Streaming ? "streaming-text-with-spinner" : "")">
-                                                @if (message.Text is null && message.ReasoningText is null)
-                                                {
-                                                    <div class="typing-indicator" role="status" aria-label="The assistant is typing">
-                                                        <span class="typing-dot"></span>
-                                                        <span class="typing-dot"></span>
-                                                        <span class="typing-dot"></span>
-                                                    </div>
-                                                }
-                                                else
-                                                {
-                                                    <Markdown Content="@message.Text" style="overflow-y:auto;" />
-                                                }
+                                                <Markdown Content="@message.Text" style="overflow-y:auto;" />                                                
                                             </div>
                                             @if (message.Status == MessageStatus.Streaming)
                                             {
@@ -340,6 +329,8 @@
         public string? ReasoningText { get; set; }
 
         public string? Text { get; set; }
+
+        public bool IsEmpty => Text is null && ReasoningText is null;
 
         public required string Role { get; set; }
 

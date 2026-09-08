@@ -21,10 +21,10 @@ public class TraceHttpClientHandler : HttpClientHandler
 
         var response = await base.SendAsync(request, cancellationToken);
 
-        var responseString = await response.Content.ReadAsStringAsync(cancellationToken);
-        PrintText("Raw Response", ConsoleColor.Green);
-        PrintText(FormatJson(responseString), ConsoleColor.DarkGray);
-        PrintSeparator();
+        //var responseString = await response.Content.ReadAsStringAsync(cancellationToken);
+        //PrintText("Raw Response", ConsoleColor.Green);
+        //PrintText(FormatJson(responseString), ConsoleColor.DarkGray);
+        //PrintSeparator();
 
         return response;
 

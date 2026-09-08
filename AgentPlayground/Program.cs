@@ -86,7 +86,7 @@ builder.Services.AddAIAgent("PlaygroundAgent", (services, key) =>
                             StreamingCount = 3
                         }
                     },
-                AIFunctionFactory.Create(DateTimeTools.GetCurrentDateTime)]
+                    AIFunctionFactory.Create(DateTimeTools.GetCurrentDateTime)]
         },
         ChatHistoryProvider = new InMemoryChatHistoryProvider(new()
         {

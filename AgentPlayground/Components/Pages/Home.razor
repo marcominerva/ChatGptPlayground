@@ -212,6 +212,7 @@
             var agentService = scope.ServiceProvider.GetRequiredService<AgentService>();
 
             var response = agentService.AskStreamingAsync(userQuestion);
+
             await foreach (var update in response)
             {
                 if (update.StreamState == StreamState.Reasoning)

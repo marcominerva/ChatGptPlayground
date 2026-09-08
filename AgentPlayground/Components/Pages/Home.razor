@@ -90,9 +90,12 @@
                                     {
                                         <div class="assistant-actions d-flex justify-content-between align-items-center mt-3">
                                             <div class="text-start bg-transparent d-flex align-items-center gap-3">
-                                                <span class="d-flex align-items-center" data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="bottom" data-bs-custom-class="tooltip-primary" data-bs-title="@message.TokenUsage">
-                                                    <i class="bi bi-cash-coin"></i>
-                                                </span>
+                                                @if (message.TokenUsage is not null)
+                                                {
+                                                    <span class="d-flex align-items-center" data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="bottom" data-bs-custom-class="tooltip-primary" data-bs-title="@message.TokenUsage">
+                                                        <i class="bi bi-cash-coin"></i>
+                                                    </span>
+                                                }
                                                 @if (message.FunctionCalls.Count > 0)
                                                 {
                                                     <span class="d-flex align-items-center" data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="bottom" data-bs-custom-class="tooltip-primary" data-bs-title="@message.FunctionCallsTooltip">
@@ -136,9 +139,18 @@
             </span>
             <input @ref="askInput" type="text" @bind="@question" @bind:event="oninput" placeholder="Ask me anything..." class="form-control border-0" maxlength="2000" @onkeydown="HandleKeyDown" />
             <div class="input-group-text bg-transparent border-0">
-                <button type="submit" class="btn btn-primary" disabled="@(isAsking || string.IsNullOrWhiteSpace(question))" @onclick="AskQuestion">
-                    <i class="bi bi-send"></i>
-                </button>
+                @if (isAsking)
+                {
+                    <button type="button" class="btn btn-danger" @onclick="StopResponse" aria-label="Stop response">
+                        <i class="bi bi-stop-fill"></i>
+                    </button>
+                }
+                else
+                {
+                    <button type="submit" class="btn btn-primary" disabled="@string.IsNullOrWhiteSpace(question)" @onclick="AskQuestion" aria-label="Send message">
+                        <i class="bi bi-send"></i>
+                    </button>
+                }
                 <span data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Start a new conversation">
                     <button type="reset" class="btn btn-secondary ms-2" disabled="@isAsking" @onclick="Reset">
                         <i class="bi bi-x-lg"></i>
@@ -159,6 +171,7 @@
 
     private Guid conversationId = Guid.NewGuid();
     private bool isAsking;
+    private CancellationTokenSource? askCancellationTokenSource;
 
     private Message? copiedMessage;
 
@@ -200,9 +213,17 @@
 
     private async Task AskQuestion()
     {
-        isAsking = true;
+        if (isAsking || string.IsNullOrWhiteSpace(question))
+        {
+            return;
+        }
 
-        var userQuestion = new Question(conversationId, question!);
+        isAsking = true;
+        askCancellationTokenSource = new();
+
+        var cancellationToken = askCancellationTokenSource.Token;
+
+        var userQuestion = new Question(conversationId, question);
         var userMessage = new Message { Text = userQuestion.Text, Role = "user", Status = MessageStatus.Completed };
         messages.Add(userMessage);
 
@@ -218,9 +239,9 @@
             await using var scope = ServiceScopeFactory.CreateAsyncScope();
             var agentService = scope.ServiceProvider.GetRequiredService<AgentService>();
 
-            var response = agentService.AskStreamingAsync(userQuestion);
+            var response = agentService.AskStreamingAsync(userQuestion, cancellationToken);
 
-            await foreach (var update in response)
+            await foreach (var update in response.WithCancellation(cancellationToken))
             {
                 if (update.StreamState == StreamState.Reasoning)
                 {
@@ -254,6 +275,15 @@
                 await EnsureMessageIsVisibleAsync();
             }
         }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+            if (assistantMessage.IsEmpty)
+            {
+                assistantMessage.Text = "Response cancelled.";
+            }
+
+            assistantMessage.Status = MessageStatus.Completed;
+        }
         catch (Exception ex)
         {
             assistantMessage.Text = $"There was an error while processing your question: {ex.Message}";
@@ -261,9 +291,17 @@
         }
         finally
         {
+            askCancellationTokenSource?.Dispose();
+            askCancellationTokenSource = null;
             isAsking = false;
+
             await InvokeAsync(StateHasChanged);
         }
+    }
+
+    private void StopResponse()
+    {
+        askCancellationTokenSource?.Cancel();
     }
 
     private void Reset()

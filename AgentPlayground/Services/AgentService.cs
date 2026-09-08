@@ -27,7 +27,7 @@ public class AgentService([FromKeyedServices("PlaygroundAgent")] AIAgent agent, 
         await foreach (var update in agent.RunStreamingAsync(question.Text, session, cancellationToken: cancellationToken))
         {
             updates.Add(update);
-            
+
             foreach (var content in update.Contents)
             {
                 switch (content)

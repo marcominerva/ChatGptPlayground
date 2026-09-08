@@ -6,5 +6,7 @@ public class AzureOpenAISettings
 
     public required string Deployment { get; init; }
 
+    public required string ImageDeployment { get; init; }
+
     public required string ApiKey { get; init; }
 }

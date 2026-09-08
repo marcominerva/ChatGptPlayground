@@ -121,6 +121,14 @@ input[type="checkbox"] + label {
     z-index: 10;
 }
 
+.generated-image {
+    display: block;
+    width: 30%;
+    max-width: 30%;
+    height: auto;
+    border-radius: 6px;
+}
+
 /* The copy button only shows an icon, so the default button chrome is removed and just the pointer cursor is kept. */
 .assistant-actions {
     line-height: 1;

@@ -27,7 +27,7 @@ public class AgentService([FromKeyedServices("PlaygroundAgent")] AIAgent agent, 
         await foreach (var update in agent.RunStreamingAsync(question.Text, session, cancellationToken: cancellationToken))
         {
             updates.Add(update);
-            
+
             foreach (var content in update.Contents)
             {
                 switch (content)
@@ -38,6 +38,17 @@ public class AgentService([FromKeyedServices("PlaygroundAgent")] AIAgent agent, 
 
                     case FunctionCallContent functionCallContent:
                         yield return new(question.ConversationId, $"{functionCallContent.Name}({string.Join(", ", functionCallContent.Arguments?.Select(a => $"{a.Key} = {a.Value}") ?? [])})", StreamState.FunctionCalling);
+                        break;
+
+                    case ImageGenerationToolResultContent imageGenerationContent:
+                        if (imageGenerationContent.Outputs is not null)
+                        {
+                            foreach (var output in imageGenerationContent.Outputs.OfType<DataContent>())
+                            {
+                                yield return new(question.ConversationId, output.Uri, StreamState.ImageGeneration);
+                            }
+                        }
+
                         break;
 
                     default:

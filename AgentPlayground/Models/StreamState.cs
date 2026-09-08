@@ -5,5 +5,6 @@ public enum StreamState
     Reasoning,
     FunctionCalling,
     Answering,
+    ImageGeneration,
     Completed
 }

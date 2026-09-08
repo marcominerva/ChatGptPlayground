@@ -1,5 +1,6 @@
 ﻿using System.ClientModel;
 using System.ClientModel.Primitives;
+using System.Net.Mime;
 using AgentPlayground.Components;
 using AgentPlayground.Services;
 using AgentPlayground.Settings;
@@ -33,11 +34,15 @@ builder.Services.ConfigureHttpClientDefaults(configure =>
 
 builder.Services.AddChatClient(_ =>
 {
-    var chatClient = new OpenAIClient(new ApiKeyCredential(aiSettings.ApiKey), new()
+    var openAIClientOptions = new OpenAIClientOptions
     {
         Endpoint = new(aiSettings.Endpoint),
         Transport = new HttpClientPipelineTransport(new HttpClient(new TraceHttpClientHandler()))
-    }).GetResponsesClient().AsIChatClientWithStoredOutputDisabled(aiSettings.Deployment);
+    };
+    openAIClientOptions.AddPolicy(new ImageDeploymentPolicy(aiSettings.ImageDeployment), PipelinePosition.PerCall);
+
+    var chatClient = new OpenAIClient(new ApiKeyCredential(aiSettings.ApiKey), openAIClientOptions)
+        .GetResponsesClient().AsIChatClientWithStoredOutputDisabled(aiSettings.Deployment);
 
     return chatClient;
 });
@@ -69,7 +74,19 @@ builder.Services.AddAIAgent("PlaygroundAgent", (services, key) =>
                 Effort = ReasoningEffort.Low,
                 Output = ReasoningOutput.Summary
             },
-            Tools = [new HostedWebSearchTool(), AIFunctionFactory.Create(DateTimeTools.GetCurrentDateTime)]
+            Tools = [new HostedWebSearchTool(), new HostedImageGenerationTool()
+                    {
+                        Options = new()
+                        {
+                            ModelId = aiSettings.ImageDeployment,
+                            Count = 1,
+                            //Supported sizes are 1024x1024, 1024x1536, 1536x1024, and auto.
+                            ImageSize = new(1024, 1024),
+                            MediaType = MediaTypeNames.Image.Png,
+                            StreamingCount = 3
+                        }
+                    },
+                AIFunctionFactory.Create(DateTimeTools.GetCurrentDateTime)]
         },
         ChatHistoryProvider = new InMemoryChatHistoryProvider(new()
         {
@@ -80,7 +97,8 @@ builder.Services.AddAIAgent("PlaygroundAgent", (services, key) =>
     loggerFactory: services.GetRequiredService<ILoggerFactory>(),
     services: services);
 }, ServiceLifetime.Scoped)
-.WithSessionStore((services, _) => services.GetRequiredService<HybridCacheSessionStoreService>(), withIsolation: false);
+//.WithSessionStore((services, _) => services.GetRequiredService<HybridCacheSessionStoreService>(), withIsolation: false)
+.WithInMemorySessionStore(withIsolation: false);
 
 builder.Services.AddScoped<AgentService>();
 

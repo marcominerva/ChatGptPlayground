@@ -126,6 +126,7 @@ input[type="checkbox"] + label {
     width: 30%;
     max-width: 30%;
     height: auto;
+    margin-bottom: 1rem;
     border-radius: 6px;
 }
 
